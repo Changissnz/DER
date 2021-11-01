@@ -1,21 +1,6 @@
 from numerical_generator import *
 from collections import Counter
 
-# TODO: class<Ball> needs to use PointSorter instead
-#       look at methods <Ball.point_in_data>,<Ball.point_in_ball>
-
-# TODO: DELETE, relocated.
-'''
-euclidean_point_distance = lambda p1, p2: np.sqrt(np.sum((p1 - p2)**2))
-
-def test_euclidean_point_distance():
-    p1 = np.array([4,15,20,7])
-    p2 = np.array([14,20,21,12])
-    q = euclidean_point_distance(p1,p2)
-    assert abs(q - 12.288) < 10 ** -3
-'''
-######
-
 '''
 similar to the frequent item-set mining algorithm, Apriori algorithm.
 

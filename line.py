@@ -2,18 +2,11 @@ from measures import *
 from globalls import *
 
 ## line generators
-
 def generate_line_by_length_and_angle(startPoint, length, angle):
-
     endPoint = hypotenuse_from_point(startPoint, length, angle)
-
     # round startpoint and endpoint to default depth 5
     startPoint,endPoint = np.round(startPoint,5), np.round(endPoint,5)
-
     return Line((startPoint, endPoint))
-
-
-
 
 """
 description:

@@ -1,4 +1,4 @@
-from search_space_iterator_test_cases import *
+from search_space_iterator_test_cases import * 
 import unittest
 
 # TODO: write tests on inverted bounds [1,0]

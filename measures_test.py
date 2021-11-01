@@ -215,4 +215,8 @@ def test_intersection_of_bounds___2():
                         [ -15.,   10.]]
     assert equal_iterables(intersection,trueIntersection)
 
-def 
+def test_euclidean_point_distance():
+    p1 = np.array([4,15,20,7])
+    p2 = np.array([14,20,21,12])
+    q = euclidean_point_distance(p1,p2)
+    assert abs(q - 12.288) < 10 ** -3

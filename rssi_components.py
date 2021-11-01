@@ -7,35 +7,6 @@ import random
 from relevance_functions import *
 
 ########################## start: activation and random selection functions
-'''
-def is_in():
-    return -1
-
-def addon_singleton__bool__criteria_range_each():
-
-    return -1
-
-# absolute or in [0,1]
-def addon_singleton__float():
-    return -1
-## $$
-#def
-def set_operator():
-
-    return -1
-
-# input: 2 (int|float)
-lambda_divide = lambda x,x2: True if x2 * int(x / x2) == x else False
-
-def lambda_vector_divide(v,v2,addOn):
-    return np.array(map(lambda_divide))
-    ## = lambda v,v2:
-    return -1
-
-###def vf_vector_reference
-'''
-### ###
-
 
 '''
 a sample relevance function to help demonstrate the work of CenterResplat.

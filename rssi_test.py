@@ -4,7 +4,6 @@ from unittest.mock import MagicMock
 
 class TestResplattingSearchSpaceIteratorClass(unittest.TestCase):
 
-    ##def test__ResplattingSearchSpaceIterator__
     #TODO: clean this up
     """
     - prg
@@ -478,28 +477,7 @@ def ballcomp_test_data_0():
 
 
 if __name__ == '__main__':
-    #test__ResplattingSearchSpaceIterator__sample_1()
-    #test__ResplattingSearchSpaceIterator__mock_next()
-    print()
-    #test__RSSI___initwithdifferentargs()
     unittest.main()
-    #test__RSSI__iterate_one_bound_2()
-
-    #test__RSSI___resplattingmode___relevancezoomnoise()
-
-    #test__ResplattingSearchSpaceIterator__sample_2()
-    #test__relevance_zoom_func_1()
-    #test__relevance_zoom_func_1_2()
-# TODO
-'''
-declining returns on best sol'n (convergence)
-    > bounds of interest must be non-intersecting
-    > ^ ^ needs to be checked!!
-
-make a mystery polynomial function.
-
-rewind and focus on LPS.
-'''
 
 ###
 

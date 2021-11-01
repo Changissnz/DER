@@ -1,6 +1,5 @@
 from rssi import *
 
-
 '''
 used for samples 1,2 to test `resplattingMode`
 '''
@@ -93,6 +92,6 @@ def sample_rssi_3():
 
     s1 = np.array([-3.5,13.0,-10.0,21.0,8.0])
     s2 = np.array([6.0,19.0,-5.0,11.0,24.0])
-    rm = ("relevance zoom",np.array([s1,s2])) 
+    rm = ("relevance zoom",np.array([s1,s2]))
     return ResplattingSearchSpaceIterator(argos["bounds"], argos["start"],\
             argos["columnOrder"], argos["ssih"], rm, argos["act"])

@@ -1,4 +1,5 @@
-from hop_pattern import *
+#from hop_pattern import *
+from .contextia_de_lo_vego_de_la_vegas import hop_pattern
 import unittest
 
 # TODO: check reversing bounds [1,0] <-> [0,1]
@@ -12,27 +13,27 @@ class TestHopPatternClass(unittest.TestCase):
         # for a cycle
 
         # case 0:
-        q = HopPattern(23.0,23.0,97.0)
+        q = hop_pattern.HopPattern(23.0,23.0,97.0)
         q.calculate_hop_directions()
         assert q.hopDirection.shape == (2,)
         assert abs(q.hopDirection[0] - (97 - 23.00) / 5) <= 10 ** -5
         ##return -1
 
         # case 1:
-        q = HopPattern(97.0,23.0,97.0)
+        q = hop_pattern.HopPattern(97.0,23.0,97.0)
         q.calculate_hop_directions()
         assert abs(q.hopDirection[0] + (97 - 23.00) / 5) <= 10 ** -5, "incorrect hop directions {}".format(q.hopDirection)
         assert q.hopDirection[0] < 0.0, "incorrect hop direction"
 
         # case 2:
-        q = HopPattern(50.0,23.0,97.0)
+        q = hop_pattern.HopPattern(50.0,23.0,97.0)
         q.calculate_hop_directions()
         assert abs(q.hopDirection[0] - (97 - 23.00) / 5) <= 10 ** -5
 
 
     def test__HopPattern__hop_one(self):
 
-        q = HopPattern(50.0,23.0,97.0, DIR = 0.2)
+        q = hop_pattern.HopPattern(50.0,23.0,97.0, DIR = 0.2)
         q.calculate_hop_directions()
 
         assert not q.did_cycle(), "invalid cycle register"
@@ -49,8 +50,8 @@ class TestHopPatternClass(unittest.TestCase):
         return
 
     def test__HopPattern__hop_one_2(self):
-        HopPattern.DEF_INCREMENT_RATIO = 0.2
-        q = HopPattern(23.0,23.0,97.0)
+        hop_pattern.HopPattern.DEF_INCREMENT_RATIO = 0.2
+        q = hop_pattern.HopPattern(23.0,23.0,97.0)
         q.calculate_hop_directions()
 
         c = 0
@@ -64,7 +65,7 @@ class TestHopPatternClass(unittest.TestCase):
     [0,1]
     """
     def test__HopPattern__hop_one_4(self):
-        q = HopPattern(1.0,0.0,1.0, DIR = 0.5)
+        q = hop_pattern.HopPattern(1.0,0.0,1.0, DIR = 0.5)
         q.calculate_hop_directions()
         c = 0
         x = [1.0, 0.5]
@@ -75,7 +76,7 @@ class TestHopPatternClass(unittest.TestCase):
         return -1
 
     def test__HopPattern__hop_one_5(self):
-        q = HopPattern(0.0,0.0,1.0, DIR = round(1/3,10))
+        q = hop_pattern.HopPattern(0.0,0.0,1.0, DIR = round(1/3,10))
         q.calculate_hop_directions()
         next(q)
         c = 1
@@ -94,7 +95,7 @@ class TestHopPatternClass(unittest.TestCase):
     ### HERE: do some tests on non-endpoint startpoint,
     ###       transfer those tests over to
     def test__HopPattern__hop_one_6(self):
-        q = HopPattern(50.0, 23.0, 97.0, DIR = round(1/3,10))
+        q = hop_pattern.HopPattern(50.0, 23.0, 97.0, DIR = round(1/3,10))
         q.calculate_hop_directions()
 
         c = 0
@@ -109,19 +110,19 @@ class TestHopPatternClass(unittest.TestCase):
     """
     def test__HopPattern__modulo_hop(self):
 
-        assert HopPattern.modulo_hop(0.0, 0.0, [0.0,1.0], 0) == 0.0
-        assert HopPattern.modulo_hop(0.0, 0.0, [0.0,1.0], 1) == 1.0
+        assert hop_pattern.HopPattern.modulo_hop(0.0, 0.0, [0.0,1.0], 0) == 0.0
+        assert hop_pattern.HopPattern.modulo_hop(0.0, 0.0, [0.0,1.0], 1) == 1.0
 
-        assert HopPattern.modulo_hop(0.0, -0.5, [0.0,1.0], 0) == 0.5
+        assert hop_pattern.HopPattern.modulo_hop(0.0, -0.5, [0.0,1.0], 0) == 0.5
 
-        assert HopPattern.modulo_hop(0.5, 0.5, [0.0,1.0], 1) == 1.0
-        assert HopPattern.modulo_hop(0.5, 0.5, [0.0,1.0], 0) == 0.0
+        assert hop_pattern.HopPattern.modulo_hop(0.5, 0.5, [0.0,1.0], 1) == 1.0
+        assert hop_pattern.HopPattern.modulo_hop(0.5, 0.5, [0.0,1.0], 0) == 0.0
 
     # TODO: add more cases
     def test__HopPattern__cycle_check(self):
 
         # case 1
-        q = HopPattern(1.0,0.0,1.0, DIR = 0.5)
+        q = hop_pattern.HopPattern(1.0,0.0,1.0, DIR = 0.5)
         q.calculate_hop_directions()
 
         q2 = next(q)
@@ -134,7 +135,7 @@ class TestHopPatternClass(unittest.TestCase):
         assert q2 == 1.0 and q.cycle_check()
 
         # case 2
-        q = HopPattern(0.0,0.0,1.0, DIR = 0.5)
+        q = hop_pattern.HopPattern(0.0,0.0,1.0, DIR = 0.5)
         q.calculate_hop_directions()
 
         q2 = next(q)
@@ -148,7 +149,7 @@ class TestHopPatternClass(unittest.TestCase):
 
     def test__HopPattern__rev__next__(self):
         # case 1
-        q = HopPattern(0.0,0.0,1.0, DIR = 0.5)
+        q = hop_pattern.HopPattern(0.0,0.0,1.0, DIR = 0.5)
         x = [0.5, 1.0]
         next(q)
 
@@ -158,7 +159,7 @@ class TestHopPatternClass(unittest.TestCase):
             assert q2 == x[i]
 
         # case 2
-        q = HopPattern(1.0,0.0,1.0, DIR = 0.5)
+        q = hop_pattern.HopPattern(1.0,0.0,1.0, DIR = 0.5)
         q.calculate_hop_directions()
         x = [0.5, 0.0]
         next(q)
@@ -168,7 +169,7 @@ class TestHopPatternClass(unittest.TestCase):
             assert q2 == x[i]
 
         # case 3
-        q = HopPattern(1.0,0.0,1.0, DIR = round(1/3,10))
+        q = hop_pattern.HopPattern(1.0,0.0,1.0, DIR = round(1/3,10))
         q.calculate_hop_directions()
         x = [1.0, round(1/3,5), round(1/3,5) * 2]
         for i in range(10):

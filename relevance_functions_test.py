@@ -272,31 +272,3 @@ def test__RChainHead___subvectorselector___():
 
     return -1
 ############################# FUTURE
-
-
-'''
-NEXT: (interval|external)
-[0] multiplier of index pairs (i,i +1)
-'''
-
-###
-'''
-    ## TODO: make invertible
-    ss = filter(lambda x: x < 5, q)
-'''
-###
-
-##
-"""
-after code clean-up, do demo on:
-
-- direction_to(rv) on sequence of vectors of rv + noise
-
-run frequency tests on directionality per index set
-
-test output can be used to devise the optimum number of
-particles required to travel the rest of the bound.
-
-next(p) := ADD_NOISE(p,multiplier)
-next(poly) := MOD_POLY
-"""

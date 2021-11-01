@@ -190,9 +190,8 @@ class HopPattern:
 
         v = value
         value = round(value + hop,5)
-        #print("v1 ",value)
         value = HopPattern.boundary_round_value(value, bounds)
-        #print("v2 ",value)
+
         # case: value at [0] or [1], endpoints,
         if value == bounds[0]:
             if head: value = bounds[1]
@@ -256,16 +255,3 @@ def vector_hop_in_bounds(v,h,b):
         v2.append(HopPattern.modulo_hop(v_,h_,b_,0))
 
     return np.array(v2)
-
-def vector_hop_in_improper_bounds(v,h,b,b2):
-
-
-
-    return -1
-
-def test_vh_improper():
-
-
-
-    #v =
-    h = np.array([8.44444444,9.77777778,5.66666667,6.33333333,7.55555556])

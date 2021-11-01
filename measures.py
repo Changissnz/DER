@@ -264,9 +264,3 @@ def is_line_in_circle(line, circleCenter, circleRadius):
 
 
 euclidean_point_distance = lambda p1, p2: np.sqrt(np.sum((p1 - p2)**2))
-
-def test_euclidean_point_distance():
-    p1 = np.array([4,15,20,7])
-    p2 = np.array([14,20,21,12])
-    q = euclidean_point_distance(p1,p2)
-    assert abs(q - 12.288) < 10 ** -3

@@ -510,13 +510,6 @@ def two_points_to_area(twoPoints):
     assert abs(twoPoints[0,0] - twoPoints[1,0]) > 10 ** -5, "two points cannot have same x-coord."
     assert abs(twoPoints[0,1] - twoPoints[1,1]) > 10 ** -5, "two points cannot have same y-coord."
 
-    """
-    print("TWO POINTS")
-    print(twoPoints)
-    op = other_points_for_two_points_in_area(twoPoints)
-    data = np.vstack((twoPoints, op))
-    """
-
     p0 = (max(twoPoints[:,0]), max(twoPoints[:,1]))
     p1 = (min(twoPoints[:,0]), max(twoPoints[:,1]))
     p2 = (min(twoPoints[:,0]), min(twoPoints[:,1]))
@@ -551,63 +544,6 @@ def area_to_corners(area):
     return np.round(np.array([area[1], upperLeft, area[0], lowerRight]),5)
 
 ############################################ START: qualifying area search
-
-# TODO: delete this
-"""
-return:
-- (start)::float,(end)::float,(distance)::float
-"""
-###
-'''
-def largest_subrange_of_coincidence_between_ranges(r1,r2, roundDepth = 5, hop = 0.05):
-    assert hop > 0, "hop > 0!"
-
-    # sort
-    assert len(r1) == 2 and len(r2) == 2, "invalid ranges {} and {}".format(r1,r2)
-    r1,r2 = sorted(r1), sorted(r2)
-
-    coin = False
-    longest = 0.0
-    start, end = float('inf'), float('inf')
-    now = 0.0
-    startN, endN = float('inf'), float('inf')
-
-    q = r1[0]
-    while q <= r1[1]:
-        # coincides
-        if q >= r2[0] and q <= r2[1]:
-            # start coincidence
-            if not coin:
-                coin = True
-                now = 0.0
-                startN = q
-                endN = float('inf')
-
-            # update coincidence
-            else:
-                now += hop
-                endN = q
-
-        # no longer coincides
-        else:
-            if coin:
-                coin = False
-                if now > longest:
-                    longest = now
-                    start,end = startN, endN
-
-                startN,endN = float('inf'), float('inf')
-
-        q = round(q + hop, roundDepth)
-
-    # update longest
-    if now > longest:
-        longest = now
-        start,end = startN, endN
-
-    return round(start, roundDepth) , round(end, roundDepth), round(longest, roundDepth)
-'''
-###
 
 """
 return:
@@ -832,13 +768,6 @@ def extremum_for_points(a):
 def point_in_bounds(b,p):
     assert is_proper_bounds_vector(b), "invalid bounds vector"
     assert is_vector(p), "invalid point"
-    """
-    print("SHAPE ",b.shape)
-    print("P ", p.shape)
-    print(b)
-    print()
-    print(p)
-    """
     assert b.shape[0] == p.shape[0]
     return np.all(b[:,0] <= p) and np.all(b[:,1] >= p)
 
