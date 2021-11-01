@@ -1,4 +1,4 @@
-*A KMeansSolver Class*
+*DER*
 
 This project is called DER. I will let the interpretation
 of that fall upon your shoulders.
