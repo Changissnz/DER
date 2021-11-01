@@ -11,3 +11,6 @@ SCHEDULE
 Some of the functions and classes do not work as intended. Another key issue is the project structure.
 
 That is the next task.
+
+11/1/21
+Restructuring Phase I completed. Some classes are unstable and testing is needed. 
