@@ -116,12 +116,21 @@ class ResplattingSearchSpaceIterator:
             print("X declaring new")
             nb = self.save_rzoom_bounds_info()
             if type(nb) == type(None): return True
+
+            if self.check_duplicate_range(nb):
+                return True  
+
             self.declare_new_ssi(nb,np.copy(nb[:,0]))
 
             # log point into range history
             self.rangeHistory.append(nb)
 
         # TODO: optional, add func. for png here.
+        return False
+
+    def check_duplicate_range(self,d):
+        for d_ in self.rangeHistory:
+            if equal_iterables(d_,d): return True
         return False
 
     '''

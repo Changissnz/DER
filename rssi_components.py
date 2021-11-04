@@ -14,7 +14,6 @@ class RZoom:
         self.rch = rch
         self.activationRanges = [] # each element is a bound
         self.activationRange = None
-        self.tsActivationRange = [] # TODO:
         return
 
     def score(self,p):

@@ -1,4 +1,4 @@
-from rssi2 import *
+from rssi import *
 
 """
 a version of the first chain; used in unit testing
@@ -53,7 +53,7 @@ def rssi__display_n_bounds(rssi, n):
 """
 def test__x():
     rssi = test_rch_chain_1(rchl = 1)
-    rssi__display_n_bounds(rssi, 2)
+    rssi__display_n_bounds(rssi, 3)
     return
 
 """
@@ -78,12 +78,9 @@ def test__x3():
 
 def test__x4():
     rssi = test_rch_chain_1(rmMode = "prg")
-
     rssi__display_n_bounds(rssi,1)
-
-
-
     print("\n\n\tNEZXTING 10\n")
+
     for i in range(10):
         print(next(rssi))
 
