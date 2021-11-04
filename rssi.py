@@ -118,7 +118,7 @@ class ResplattingSearchSpaceIterator:
             if type(nb) == type(None): return True
 
             if self.check_duplicate_range(nb):
-                return True  
+                return True
 
             self.declare_new_ssi(nb,np.copy(nb[:,0]))
 
@@ -218,7 +218,6 @@ class ResplattingSearchSpaceIterator:
         if self.ssi.reached_end():
             self.iteratedOnce = True
             self.iterateIt = True
-            print("\t\tchecking term")
             self.terminated = self.update_resplatting_instructor()
             # close cycle here.
         else:
@@ -246,9 +245,13 @@ class ResplattingSearchSpaceIterator:
 
         #### do
 
-# methods of interest
-"""
-make_relevance_zoom
-make_prg_centers
-load_activation_ranges
-"""
+def rssi__display_n_bounds(rssi, n):
+    for i in range(n):
+        print("iterating bound ",i)
+        q = ResplattingSearchSpaceIterator.iterate_one_bound(rssi)
+        for q_ in q:
+            print(q_)
+        # summary
+        rssi._summary()
+        print("\n--------------------------------------------------")
+    return -1

@@ -54,7 +54,10 @@ class CenterResplat:
         self.rch = rch
         self.noiseRange = noiseRange
         ##self.radius = self.default_radius()
+
+        # restrict cache to non-deletion
         self.relevantPointsCache = []
+        self.rpIndexCounter = defaultdict(int) # index
 
         # TODO: counter for r.p. selection
 
@@ -77,6 +80,9 @@ class CenterResplat:
 
         # choose random relevant point
         rpi = random.randrange(len(self.relevantPointsCache))
+
+        self.rpIndexCounter[rpi] += 1
+
         v = self.relevantPointsCache[rpi]
 
         # add noise
