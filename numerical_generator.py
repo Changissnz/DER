@@ -6,10 +6,11 @@ from math import ceil
 from matrix_methods import *
 from variance_works import *
 from collections import OrderedDict
+
+# TODO:
+
 ####--------------------------------------------------------------------------
 #### basic linear congruential generator
-
-
 '''
 linear congruential generator
 '''
@@ -114,7 +115,6 @@ class CycleMap:
         if len(set(x)) != l: return False
         return True
 
-
     def head_(self):
         for k,v in self.mahp.items():
             self.head = k
@@ -131,7 +131,6 @@ class CycleMap:
         return self.mahp[k]
 
     #### TODO: make generators for non-cycles
-
 
 ##########################################################################################
 
@@ -228,6 +227,8 @@ def generate_random_binary_sequence(vecOrder):
 ####---------------------------------------------------------------------
 #### uniform dist. numerical generators
 
+"""
+"""
 def generate_uniform_sequence_in_bounds(vecOrder, bounds):
 
     assert is_2dmatrix(bounds), "invalid bounds {}".format(bounds)
@@ -271,17 +272,15 @@ def choose_random_bounds(minVec,maxVec):
 '''
 ###------------------------
 
-
-
 """
 noiseRange := 2dmatrix, len is 1 or len(point)
 """
-def one_random_noise(k,bounds,noiseRange):
+def one_random_noise(bounds,noiseRange):
     assert is_bounds_vector(bounds), "invalid bounds"
 
     # set max distance for each dim.
     q = bounds[:,1] - bounds[:,0]
-    us = generate_uniform_sequence_in_bounds(k, noiseRange)
+    us = generate_uniform_sequence_in_bounds(bounds.shape[0], noiseRange)
     q = q * us
     return q
 
@@ -298,14 +297,14 @@ minVec,maxVec := vectors that do not need to be sorted
 def add_noise_to_points_restricted_bounds(minVec,maxVec, points, noiseRange = np.array([[0.25,0.65]])):
 
     b = np.array([minVec,maxVec]).T
-    k = b.shape[0]
+    #k = b.shape[0]
     for p in points:
-        yield p + one_random_noise(k,b,noiseRange)
+        yield p + one_random_noise(b,noiseRange)
 
-def random_noise_sequence(s,k,b,noiseRange):
+def random_noise_sequence(s,b,noiseRange):
     rn = []
     for i in range(s):
-        n = one_random_noise(k,b,noiseRange)
+        n = one_random_noise(b,noiseRange)
         rn.append(n)
     return np.array(rn)
 
@@ -313,3 +312,11 @@ def random_noise_sequence(s,k,b,noiseRange):
 def generate_gaussian_sequence_in_bounds(mean, var):
     rng.normal()
     return -1
+
+class NoiseAdder:
+
+    def __init__(self, bounds, noiseRange):
+        return
+
+    def add_noise(referencePoint, inBoundsRestriction = False):
+        return -1

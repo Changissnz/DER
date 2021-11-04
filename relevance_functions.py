@@ -54,6 +54,29 @@ def relevance_zoom_func_2(referencePoint, modulo, activationThreshold):
         return lambda p: True if len(q == 1.0) >= lim else False
     return p
 
+
+## TODO: delete?
+'''
+a sample relevance function to help demonstrate the work of CenterResplat.
+
+return:
+- function(vector) ->
+        True if all values in (point % modulo) fall within moduloPercentileRange
+'''
+def relevance_func_2(modulo, moduloPercentileRange):
+    assert modulo >= 0.0, "invalid modulo"
+    assert is_valid_point(moduloPercentileRange)
+    assert min(moduloPercentileRange) >= 0.0 and max(moduloPercentileRange) <= 1.0
+    assert moduloPercentileRange[0] <= moduloPercentileRange[1]
+
+    minumum,maximum = moduloPercentileRange[0] * modulo,moduloPercentileRange[1] * modulo
+
+    def f(p):
+        p_ = p % modulo
+        return np.all(p_ >= minumum) and np.all(p_ <= maximum)
+
+    return f
+
 # should addOn? be opt.
 """
 boolean function, addon determines
@@ -251,18 +274,8 @@ class RCInst:
 
     """
     """
-    def load_var_cf(self,cf):#,ct=()):
+    def load_var_cf(self,cf):
         self.cf = cf
-        #self.ct = ct
-
-
-    ##
-    """
-    def load_var_t(self,t=()):
-        assert type(t) is tuple
-        self.t = t
-    """
-    ##
 
     """
     threshold variable, use as cf(v,dt)
@@ -325,7 +338,6 @@ class RChainHead:
     """
     @staticmethod
     def make_linker_func(es):
-
         return -1
 
     def link_rch(self,rch,linkerFunc, prev = False):
@@ -482,9 +494,9 @@ def RCHF__point_distance_to_references(r,ed0):
 pass string is boolean expression
 """
 def RCHF__point_distance_to_references_dec(r,ed0,passString):
+    return -1
 
-
-    # pass vector<distances> -> <bool> --> pass-string -> bool 
+    # pass vector<distances> -> <bool> --> pass-string -> bool
 
 # TODO: incorporate expresso now.
 

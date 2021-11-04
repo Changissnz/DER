@@ -245,8 +245,6 @@ def cycle_hop_pattern(hopPattern):
 def vector_hop_in_bounds(v,h,b):
     assert is_vector(v) and is_vector(h), "invalid vectors"
     assert is_proper_bounds_vector(b), "invalid bounds"
-    #assert is_bounds_vector(b), "invalid bounds"
-
 
     v2 = []
     for (i,v_) in enumerate(v):
