@@ -42,8 +42,6 @@ class SearchSpaceIterator:
         self.calculate_endpoint()
         self.cache = np.copy(self.startPoint)
         self.initialized = False
-
-
         return
 
     def de_value(self):
@@ -172,9 +170,7 @@ class SearchSpaceIterator:
 
         self.cache = np.empty((self.startPoint.shape[0],))
 
-        ### TODO: this is inverted order
         # increment the first hop pattern
-
         index = len(self.columnOrder) - 1
 
         x = self.hopPatterns[self.columnOrder[index]].rev__next__()
@@ -216,16 +212,13 @@ class SearchSpaceIterator:
         for i in range(diff):
             columnOrderIndex = index + i
             columnIndex = self.columnOrder[columnOrderIndex]
-            #print("column ",columnIndex)
             self.cache[columnIndex] = self.hopPatterns[columnIndex].value_at()
         return np.round(self.cache, 5)
 
     # TODO: run tests on `carryOverType`
     """
-
     if carryOverType := "infinite", will continue carrying over after cycling
                         through all columns once.
-
     """
     # TODO: rev is actually inverse
     def carry_over(self, lastIndex, carryOverType = "finite", rev = False):
@@ -315,11 +308,6 @@ class SkewedSearchSpaceIterator(SearchSpaceIterator):
             == type(None) else startPoint
         self.ref2 = np.copy(self.referenceBounds[:,0])
 
-
-        ### USES DIFFERENT APPROACH
-        #sp = np.copy(self.parentBounds[:,0])
-        #self.skew = point_difference_of_improper_bounds(self.referenceBounds, self.parentBounds)
-
         pd = point_difference_of_improper_bounds(self.referenceBounds, self.parentBounds)
         self.iBounds = np.vstack((self.parentBounds[:,0],self.parentBounds[:,0] + pd)).T
         self.set_skew()
@@ -327,7 +315,6 @@ class SkewedSearchSpaceIterator(SearchSpaceIterator):
 
         # declare SSI
         super().__init__(self.iBounds, np.copy(sp), columnOrder, SSIHop,cycleOn, cycleIs)
-
 
         # sort reference bounds
         self.e2 = vector_hop_in_bounds(self.endpoint,self.skew,self.parentBounds)
@@ -385,7 +372,6 @@ class SkewedSearchSpaceIterator(SearchSpaceIterator):
 
         q = SearchSpaceIterator.__next__(self)
         self.ref2 = self.round_value(q)
-        #print('before ', q, " ", 'after ', self.ref2)
         return np.copy(self.ref2)
 
     def rev__next__(self):
