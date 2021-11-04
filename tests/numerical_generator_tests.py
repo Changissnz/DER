@@ -1,12 +1,7 @@
-#from DER.numerical_generator import *
-#from .numerical_generator import *
-#from .context import numerical_generator
-
-#from .contextia_de_lo_vego_de_la_vegas import *
 from .contextia_de_lo_vego_de_la_vegas import numerical_generator
+from collections import OrderedDict
 
 import unittest
-from collections import OrderedDict
 
 class TestNumericalGeneratorClass(unittest.TestCase):
 

@@ -1,10 +1,7 @@
-#from hop_pattern import *
 from .contextia_de_lo_vego_de_la_vegas import hop_pattern
 import unittest
 
 # TODO: check reversing bounds [1,0] <-> [0,1]
-
-
 class TestHopPatternClass(unittest.TestCase):
 
     def test__HopPattern__calculate_hop_directions(self):

@@ -1,4 +1,3 @@
-#from search_space_iterator import *
 from .contextia_de_lo_vego_de_la_vegas import search_space_iterator
 
 def SearchSpaceIterator_case_1():

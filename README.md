@@ -15,3 +15,6 @@ SCHEDULE
 
 11/4/21
 - Refactoring for file `rssi.py`.
+- Make a noise adder class for `CenterResplat` to use.
+- numerical space sample generator
+  - will save to file
