@@ -93,55 +93,11 @@ class SearchSpaceIterator:
     '''
     def adjust_hop_pattern_heads(self):
         for (i,hp) in enumerate(self.hopPatterns):
-            ## INCORRECT
-
             if hp.value == self.bounds[i,0] or hp.value == self.bounds[i,1]:
                 hp.head = self.bounds[i,self.cycleIs]
                 hp.headIndex = self.cycleIs
             else:
                 pass
-
-            ####
-            """
-            hp.head = self.bounds[i,self.cycleIs]
-            hp.headIndex = self.cycleIs
-            """
-            ## INCORRECT: does not account for non-boundary starting point
-            ## if cycleIs is 0, then head is starting point, else head opp.
-
-            ###
-            '''
-            if hp.value == self.bounds[i,0]:
-                ci = 0 if self.cycleIs == 0 else 1
-                hp.head = self.bounds[i,ci]
-                hp.headIndex = ci
-            elif hp.value == self.bounds[i,1]:
-                ci = 1 if self.cycleIs == 0 else 0
-                hp.head = self.bounds[i,ci]
-                hp.headIndex = ci
-            else:
-                ci = self.cycleIs
-
-                # moves right
-                if hp.hopDirection[0] < 0:
-                    ci = 1 if self.cycleIs == 0 else 0
-
-                hp.head = self.bounds[i,ci]
-                hp.headIndex = ci
-            '''
-            ###
-            """
-            if not (hp.value == self.bounds[i,0] or hp.value == self.bounds[i,1]):
-                pass
-
-            ci = self.cycleIs
-            if hp.hopDirection[0] < 0:
-                ci = 1 if self.cycleIs == 0 else 0
-
-            hp.head = self.bounds[i,ci]
-            hp.headIndex = ci
-            """
-
         return
 
     """
