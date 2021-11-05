@@ -2,12 +2,9 @@
 this is a re-write of RSSI
 '''
 from rssi_components import *
-
 # use for adding noise
 from numerical_generator import *
 
-# TODO:
-##
 DEFAULT_RSSI_NOISE_ADDER = np.array([[0.01,0.15]])
 
 ##
@@ -199,6 +196,11 @@ class ResplattingSearchSpaceIterator:
         if self.terminated: return None
         #
         q = self.pre_next()
+
+        # case: prg terminates
+        if type(q) == type(None):
+            self.terminated = True
+            return None
 
         # log point into ResplattingInstructor
         #$%$

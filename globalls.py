@@ -5,12 +5,13 @@ import csv
 WHITE = (255,255,255)
 BLACK = (0,0,0)
 BLUE = (0,0,255)
+REDGREENOREGON = (123,321,231)
 
 DEFAULT_TRAVELLING_HOP = 0.05
 DEFAULT_SCREEN_DIM = (1300,750)
 DEFAULT_POINT_CACHE_SIZE = 10
 
-
+# TODO:
 def clear_and_make_directory(dirPath):
 
     ##dirr = os.path.dirname(fullPath)
