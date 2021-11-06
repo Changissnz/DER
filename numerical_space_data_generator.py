@@ -29,9 +29,19 @@ class NSDataInstructions:
         # folder
         if "/" in self.filePath:
             # check exists
+            #
+            s = self.filePath[::-1]
+            q = s.find('/')
+            s = s[q + 1:][::-1]
+
             if not os.path.isdir(self.filePath):
                 # make directory
-                os.mkdir(self.filePath)
+                s = self.filePath[::-1]
+                q = s.find('/')
+                s = s[q + 1:][::-1]
+                os.mkdir(s)
+                modeia = 'w'
+                
         self.fp = open(self.filePath,modeia)
         return
 

@@ -488,6 +488,7 @@ def RCHF__point_in_bounds_subvector_selector(b):
     return rc.apply
 
 def RCHF__point_distance_to_references(r,ed0):
+
     return -1
 
 """
@@ -499,6 +500,15 @@ def RCHF__point_distance_to_references_dec(r,ed0,passString):
     # pass vector<distances> -> <bool> --> pass-string -> bool
 
 # TODO: incorporate expresso now.
+
+def ffilter(v,f):
+
+    t,l = [],[]
+    for v_ in v:
+        if f(v_): t.append(v_)
+        else: l.append(v_)
+
+    return t,l
 
 # make an rch by the following:
 '''
@@ -523,11 +533,11 @@ past memory
 + + => +
 '''
 def rpmem_func(rf,rOp):
-    rfo0,rfo1 = ffilter(rf,lambda i: i % 2,'a')
+    rfo0,rfo1 = ffilter(rf,lambda i: i % 2)
     r1 = np.product(rfo1) if rOp else np.product(rfo0)
 
     def p(v):
-        v0,v1 = ffilter(v,lambda i: i % 2,'a')
+        v0,v1 = ffilter(v,lambda i: i % 2)
         r2 = np.product(v1) if rOp else np.product(v0)
         return int(r2) % 2
 
