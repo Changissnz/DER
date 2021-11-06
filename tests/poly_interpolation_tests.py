@@ -222,7 +222,6 @@ class TestLagrangePolySolverMethods(unittest.TestCase):
         x,x2 = lps.intersection_with_line_v2(line)
         self.assertTrue(x2, "intersection exists b/t lps2 and l2")
 
-
     def test__LagrangePolySolver__yield_lines_clockwise_from_source_in_area(self):
 
         sourcePoint = np.array([50,50])
