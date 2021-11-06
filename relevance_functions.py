@@ -10,16 +10,10 @@ lambda_pointinbounds = lambda p,b: point_in_bounds_(b,p)
 
 def lambda_countpointsinbounds(p,b):
     if b.shape[0] == 1:
-        ##q = len(np.where(lambda_floatin(p,b[0]) == True)[0])
         mask = np.logical_and(p >= b[0,0],p <= b[0,1])
-        print("MASK 0")
-        print(mask)
     else:
-        print("MASK")
         mask = np.logical_and(p >= b[:,0],p <= b[:,1])
-        print(mask)
     q = len(np.where(mask == True)[0])
-    print("Q: ",q)
     return q
 
 def lambda_ratiopointsinbounds(p,b):
@@ -209,7 +203,6 @@ def addon_singleton__bool__criteria_distance_from_reference(rf, dm, dt,cf):
 
 
 def addon_pwcomp__x():
-    #dm := func((v1,v2)->v3), distance measure between (rf,v)
     return -1
 
 # RChain is a sequence-like structure of nodes with
@@ -490,6 +483,60 @@ def RCHF__point_in_bounds_subvector_selector(b):
 def RCHF__point_distance_to_references(r,ed0):
 
     return -1
+
+from poly_struct import *
+
+"""
+constructs an RCH function
+
+- 2+ nodes
+- node 1 outputs a float value from arg<v>
+- last node outputs a bool|float
+"""
+
+def RCHF__ISPoly(x:'float',largs):
+    rc = RChainHead()
+
+    isp = ISPoly(x)
+
+    def qf(v):
+        return isp.apply(v)
+
+    kwargs = ['nr',qf]
+    rc.add_node_at(kwargs)
+
+    for a in largs:
+        rc.add_node_at(a)
+
+    return rc.apply
+
+# TODO: test this 
+"""
+outputs the func for
+"""
+def RCHF___in_bounds(bounds0):
+    kwargs = ['nr', lambda_pointinbounds, bounds0]
+
+    # f : v -> v::bool
+    rc = RChainHead()
+    rc.add_node_at(kwargs)
+
+    # f : filter out True | False
+    subvectorSelector = boolies
+    ss = subvector_selector(subvectorSelector,2)
+    kwargs = ['nr',ss]
+    rc.add_node_at(kwargs)
+
+    # f : get indices
+    ss = column_selector([0],True)
+    kwargs = ['nr',ss]
+    rc.add_node_at(kwargs)
+
+    # f : apply indices on reference
+    kwargs = ['nr',(vector_index_inverse_selector,[0])]
+    rc.add_node_at(kwargs)
+
+    return rc.apply
 
 """
 pass string is boolean expression

@@ -7,3 +7,4 @@ import hop_pattern
 import search_space_iterator
 import poly_interpolation
 import poly_struct
+import relevance_functions
