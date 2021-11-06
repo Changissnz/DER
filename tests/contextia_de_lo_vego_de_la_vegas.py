@@ -6,3 +6,4 @@ import numerical_generator
 import hop_pattern
 import search_space_iterator
 import poly_interpolation
+import poly_struct
