@@ -18,3 +18,6 @@ SCHEDULE
 - Make a noise adder class for `CenterResplat` to use.
 - numerical space sample generator
   - will save to file
+
+11/7/21
+- Working on additional components for `numerical space sample generator`

@@ -5,7 +5,7 @@ from rssi_components import *
 # use for adding noise
 from numerical_generator import *
 
-DEFAULT_RSSI_NOISE_ADDER = np.array([[0.01,0.15]])
+DEFAULT_RSSI__CR__NOISE_ADDER = np.array([[0.01,0.15]])
 
 ##
 
@@ -103,7 +103,7 @@ class ResplattingSearchSpaceIterator:
                 q = (rz,None)
                 ##self.rangeHistory.append(np.copy(self.bounds))
             else:
-                cs = CenterResplat(np.copy(self.bounds), self.rm[1], DEFAULT_RSSI_NOISE_ADDER)
+                cs = CenterResplat(np.copy(self.bounds), self.rm[1], DEFAULT_RSSI__CR__NOISE_ADDER)
                 q = (None,cs)
 
             self.ri = ResplattingInstructor(q[0],q[1])

@@ -4,6 +4,16 @@ import random
 from copy import  deepcopy
 import operator
 
+# NOTE: when devising euclidean_point_distance measures
+'''
+reference count
+vector -> ed vector -> (ed in bounds):float -> bool(float)
+
+reference existence
+vector -> ed vector -> (ed in bounds):bool
+'''
+
+
 lambda_floatin = lambda x,b: x >= min(b) and x <= max(b)
 
 lambda_pointinbounds = lambda p,b: point_in_bounds_(b,p)
@@ -468,6 +478,75 @@ def RCHF__point_in_bounds(b):
     rc.add_node_at(kwargs)
     return rc.apply
 
+"""
+this is a relevance zoom with update capabilities that
+is used primarily for generating data in file<ball_comp.py>
+
+update instructions take a pair
+args = (bounds,k)
+p = (nodeIndex, args)
+"""
+def RCH__relevancezoom__specialized(bInf):
+
+    #def qf(v):
+
+    # NOTE: when devising euclidean_point_distance measures
+    '''
+    reference existence
+    vector -> ed vector -> (ed in bounds):bool
+    '''
+    return -1
+
+# CAUTION: start point at left
+
+# TIP: pipeline should use pass args from RSSI to this function to update RCInst
+
+def hops_to_default_noise_range(h):
+    return np.array([[(h ** -1) / 2.7, (h ** -1) / 2.3]])
+
+"""
+arguments:
+- updateInfo := (parent bounds, bounds, h, fh, splat type)
+
+return:
+- rf value:
+"""
+def relevancezoom__update_info(updateInfo):
+    assert updateInfo[4] in {'evenly spaced', 'evenly space w/ noise', 'random'}
+
+    h_ = updateInfo[3](updateInfo[2])
+    nr = None
+    if "noise" in updateInfo[4]:
+        nr = hops_to_default_noise_range(h_)
+
+    if "evenly spaced" in updateInfo[3]:
+
+        # case: improper bounds
+        if not is_proper_bounds_vector(updateInfo[1]):
+            part = SkewedSearchSpaceIterator.n_partition(updateInfo[0],updateInfo[1],h_,nr)
+
+            # remove the first and last element
+            part = part[1:-1]
+        else:
+            part = n_partition_for_bound(updateInfo[1],h_)
+            if "noise" in updateInfo[3]:
+                part = add_noise_to_points_restricted_bounds(updateInfo[1][:,0], updateInfo[1][:,1], part, nr)
+
+            part = part[1:-1]
+
+    else:
+        if not is_proper_bounds_vector(updateInfo[1]):
+            part = SkewedSearchSpaceIterator.k_random_points_in_bounds(updateInfo[0],updateInfo[1],updateInfo[3])
+
+        else:
+            part = k_random_points_in_bounds(updateInfo[1][:,0],updateInfo[1][:,1],h_)
+
+    return part
+
+
+def RSSI_pass_update_args_to_RCInst():
+    return -1
+
 '''
 '''
 def RCHF__point_in_bounds_subvector_selector(b):
@@ -510,7 +589,7 @@ def RCHF__ISPoly(x:'float',largs):
 
     return rc.apply
 
-# TODO: test this 
+# TODO: test this
 """
 outputs the func for
 """

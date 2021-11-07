@@ -265,6 +265,19 @@ def choose_random_bounds(minVec,maxVec):
 
 ################################# TODO: noise methods need to be checked.
 
+'''
+a method that generates points in bounds by random.random()
+'''
+def k_random_points_in_bounds(minVec,maxVec,k):
+    assert np.all(maxVec - minVec >= 0.0), "invalid arguments min.,max. vec"
+
+    d = maxVec - minVec
+    for i in range(k):
+        x = random.random()
+        yield minVec + (d * x)
+
+
+
 # TODO: redo, over-complicated
 '''
 - description:
