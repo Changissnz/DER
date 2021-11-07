@@ -255,6 +255,46 @@ class RCInst:
         self.cf = None
         self.dt = None
         ##self.ct = ()
+        self.updateFunc = {}
+        self.updateInfo = None
+        self.updatePath = {} # k = index -> function argument indices in updateInfo
+
+    def inst_update_var(self):
+        for k,v in self.updatePath.items():
+            q = [x for (i,x) in enumerate(self.updateInfo) if i in v]
+            f = self.updateFunc[k]
+            x = f(*tuple(q))
+            self.update_var(k,x)
+
+    """
+    loads initial arguments for update;
+
+    standard case is:
+
+    updateInfo := (parent bounds, bounds, h, fh, splat type)
+    """
+    ###
+    '''
+    def load_update_inst(self,updateInfo,updateVar):
+        assert updateVar in {"rf","dm","cf","dt"}
+        self.updateInfo[updateVar] = updateInfo
+    '''
+    ###
+
+    def load_update_info(self,updateInfo):
+        self.updateInfo = updateInfo
+
+    def update_var(self,k,v):
+        if k == "rf":
+            self.rf = v
+        if k == "dm":
+            self.dm = v
+        if k == "cf":
+            self.cf = v
+        elif k == "dt":
+            self.dt = v
+        else:
+            raise ValueError("invalid key {}".format(k))
 
     """
     """
@@ -335,6 +375,23 @@ class RChainHead:
     def __init__(self):
         self.s = []
         self.vpath = []
+        self.updatePath = {} # node index -> update indices
+
+    ####---
+    '''
+    loads an update_path that considers, for k variable arguments,
+
+    '''
+    def load_update_path(self,up):
+        self.updatePath = up
+        return
+
+    def load_update_vars(self,varList):
+        for k,v in self.updatePath.items():
+            uv = [v_ for (i,v_) in enumerate(v)]
+            self.s[k].load_update_info(uv)
+
+    ####---
 
     """
     es := expression string,
@@ -503,6 +560,11 @@ def RCH__relevancezoom__specialized(bInf):
 
 def hops_to_default_noise_range(h):
     return np.array([[(h ** -1) / 2.7, (h ** -1) / 2.3]])
+
+
+def relevancezoom__update_info_evenly_spaced():
+
+    return -1 
 
 """
 arguments:

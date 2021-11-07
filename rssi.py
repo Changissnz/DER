@@ -9,6 +9,19 @@ DEFAULT_RSSI__CR__NOISE_ADDER = np.array([[0.01,0.15]])
 
 ##
 
+### TODO: test this
+'''
+method used by <ResplattingSearchSpaceIterator>
+'''
+def update_rch_by_path(rch,largs,updatePath):
+
+    def collect_largs(indices):
+        return [l for (i,l) in enumerate(largs) if i in indices]
+
+    for k,v in updatePath.items():
+        q = collect_largs(v)
+        rch[k].update_args(q)
+
 """
 class<ResplattingSearchSpaceIterator> is a data-structure
 that relies on class<SearchSpaceIterator>.
@@ -22,7 +35,7 @@ the original bounds:
 
 class ResplattingSearchSpaceIterator:
 
-    def __init__(self,bounds, startPoint, columnOrder = None, SSIHop = 7, resplattingMode = ("relevance zoom",None)):
+    def __init__(self,bounds, startPoint, columnOrder = None, SSIHop = 7, resplattingMode = ("relevance zoom",None), rchUpdatePath = None):
         assert is_proper_bounds_vector(bounds), "bounds "
         assert is_vector(startPoint), "invalid start point"
 
@@ -50,6 +63,19 @@ class ResplattingSearchSpaceIterator:
         self.update_resplatting_instructor()
 
         self.ic = [] # iteration cache
+        self.rchUpdatePath = rchUpdatePath
+        self.assert_valid_path()
+        return
+
+    def assert_valid_path(self):
+        if type(self.rchUpdatePath) == type(None):
+            return
+        assert type(self.rchUpdatePath) == dict, "invalid type for rch"
+
+        k_ = []
+        for k,v in self.rchUpdatePath.items():
+            k_.append(k)
+            assert min(v) >= 0 and max(v) < len(self.rm)
         return
 
     @staticmethod
@@ -94,6 +120,7 @@ class ResplattingSearchSpaceIterator:
             print("making skew")
             self.ssi = SkewedSearchSpaceIterator(bounds,self.bounds,startPoint,self.columnOrder,self.SSIHop,cycleOn = True)
 
+        # $$$ CALL UPDATE RCH HERE
 
     def update_resplatting_instructor(self):
 

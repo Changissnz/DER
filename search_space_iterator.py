@@ -355,7 +355,7 @@ class SkewedSearchSpaceIterator(SearchSpaceIterator):
         s = split_improper_bound(parentBounds,bounds,checkPoints = True)
         d2,d1 = s[1][:,1] - s[0][:,1], s[1][:,0] - s[0][:,0]
         dx = d1 + d2
-        sssi = SkewedSearchSpaceIterator(bounds, parentBounds,start,columnOrder = None,3)
+        sssi = SkewedSearchSpaceIterator(bounds, parentBounds,start,None,3)
 
         for i in range(k):
             q = random.random() * dx

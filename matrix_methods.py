@@ -704,6 +704,9 @@ def bounds_is_proper_subbounds(b1,b2):
     return True if
 '''
 
+"""
+boundRange :=
+"""
 def subbound_of_bound(b, boundRange):
     assert is_2dmatrix(b), "invalid type for bounds"
     assert b.shape[1] == 2, "invalid shape for bounds"
@@ -776,6 +779,16 @@ def point_in_bounds_(b,p):
         return np.all(b[0,0] <= p) and np.all(b[0,1] >= p)
     return point_in_bounds(b,p)
 
+def point_in_improper_bounds(parentBounds,bounds,p):
+    assert not is_proper_bounds_vector(bounds), "invalid bounds"
+    ibs = split_improper_bound(parentBounds,bounds,checkPoints = True)
+
+    rf = lambda f,i: (f >= ibs[0][i,0] and f <= ibs[0][i,1]) or\
+                (f >= ibs[1][i,0] and f <= ibs[1][i,1])
+
+    for (i,p_) in enumerate(p):
+        if not rf(p_,i): return False
+    return True
 
 # CAUTION: no assertion coded
 """
@@ -806,16 +819,62 @@ def point_on_bounds_by_ratio_vector(b,rv):
     x = rv * (b[:,1] - b[:,0])
     return b[:,0] + x
 
+def point_on_improper_bounds_by_ratio_vector(parentBounds,bounds,rv):
+    ib = split_improper_bound(parentBounds,bounds,checkPoints = True)
+
+    q = point_difference_of_improper_bounds(bounds,parentBounds)
+    pd1 = ib[0][:,1] - ib[0][:,0] # point diff
+    s = rv * q # point add
+    p2 = np.copy(bounds[:,0])
+
+    for (i,s_) in enumerate(s):
+
+        d = pd1[i] - s_
+
+        # if addition is greater than first half
+        if d < 0:
+            px = parentBounds[i,0] - d
+        else:
+            px = p2[i] + s_
+        p2[i] = px
+
+    return p2
+
+def vector_ratio(bound,point):
+    assert point_in_bounds(bound,point), "point not in bounds"
+    return (point - bound[:,0]) / (bound[:,1] - bound[:,0])
+
+'''
+'''
+def vector_ratio_improper(parentBounds,bounds,point):
+    ib = split_improper_bound(parentBounds,bounds,checkPoints = True)
+    assert len(ib) > 1, "bounds not improper"
+    pd = point_difference_of_improper_bounds(bounds,parentBounds)
+
+    def h(p_,i):
+        t = pd[i]
+
+        if p_ >= ib[0][i,0] and p_ <= ib[0][i,1]:
+            x = p_ - ib[0][i,0]
+        else:
+            x = (ib[0][i,1] - ib[0][i,0]) + (p_ - parentBounds[i,0])
+        return x / t
+
+    v_ = []
+    for (i,p_) in enumerate(point):
+        v_.append(h(p_,i))
+    return np.round(v_,5)
+
 def refit_points_for_new_bounds(points,oldBounds,newBounds):
-
-    def vector_ratio(p):
-        return (p - oldBounds[:,0]) / (oldBounds[:,1] - oldBounds[:,0])
-
     q = []
     for p_ in points:
-        vr = vector_ratio(p_)
-        p2 = point_on_bounds_by_ratio_vector(newBounds,vr)
-        q.append(p2)
+        q.append(refit_point_for_new_bounds(p_,oldBounds,newBounds))
     return np.array(q)
+
+def refit_point_for_new_bounds(p,oldBounds,newBounds):
+    vr = vector_ratio(oldBounds,p)
+    return point_on_bounds_by_ratio_vector(newBounds,vr)
+
+
 
 ######## end: some methods on bounds
