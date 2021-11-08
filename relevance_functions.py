@@ -562,9 +562,10 @@ def hops_to_default_noise_range(h):
     return np.array([[(h ** -1) / 2.7, (h ** -1) / 2.3]])
 
 
+#################################### start : ostracio && deletira
 def relevancezoom__update_info_evenly_spaced():
 
-    return -1 
+    return -1
 
 """
 arguments:
@@ -606,8 +607,12 @@ def relevancezoom__update_info(updateInfo):
     return part
 
 
+
 def RSSI_pass_update_args_to_RCInst():
     return -1
+
+#################################### end : ostracio && deletira
+
 
 '''
 '''
