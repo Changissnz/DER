@@ -1,4 +1,5 @@
 from .contextia_de_lo_vego_de_la_vegas import search_space_iterator
+import numpy as np
 
 def SearchSpaceIterator_case_1():
 
@@ -43,7 +44,7 @@ def SearchSpaceIterator_case_4():
 
     startPoint = np.array([0.0,0.5,0.3, 1,0.75])
     columnOrder = [4,2,0,1,3]
-    HopPattern.DEF_INCREMENT_RATIO = round(1/7,10)
+    search_space_iterator.HopPattern.DEF_INCREMENT_RATIO = round(1/7,10)
     ##return SearchSpaceIterator(bounds, startPoint, columnOrder,\
     ##    7, "proportional")
     return search_space_iterator.SearchSpaceIterator(bounds, startPoint, columnOrder,7)

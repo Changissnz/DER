@@ -35,7 +35,7 @@ the original bounds:
 
 class ResplattingSearchSpaceIterator:
 
-    def __init__(self,bounds, startPoint, columnOrder = None, SSIHop = 7, resplattingMode = ("relevance zoom",None), rchUpdatePath = None):
+    def __init__(self,bounds, startPoint, columnOrder = None, SSIHop = 7, resplattingMode = ("relevance zoom",None), additionalUpdateArgs = ()):
         assert is_proper_bounds_vector(bounds), "bounds "
         assert is_vector(startPoint), "invalid start point"
 
@@ -60,22 +60,10 @@ class ResplattingSearchSpaceIterator:
         self.declare_new_ssi(np.copy(self.bounds), np.copy(self.startPoint))
 
         self.ri = None
+        self.aua = additionalUpdateArgs
         self.update_resplatting_instructor()
 
         self.ic = [] # iteration cache
-        self.rchUpdatePath = rchUpdatePath
-        self.assert_valid_path()
-        return
-
-    def assert_valid_path(self):
-        if type(self.rchUpdatePath) == type(None):
-            return
-        assert type(self.rchUpdatePath) == dict, "invalid type for rch"
-
-        k_ = []
-        for k,v in self.rchUpdatePath.items():
-            k_.append(k)
-            assert min(v) >= 0 and max(v) < len(self.rm)
         return
 
     @staticmethod
@@ -120,15 +108,13 @@ class ResplattingSearchSpaceIterator:
             print("making skew")
             self.ssi = SkewedSearchSpaceIterator(bounds,self.bounds,startPoint,self.columnOrder,self.SSIHop,cycleOn = True)
 
-        # $$$ CALL UPDATE RCH HERE
-
+    # CAUTION: only rm[0] == `relevance zoom` has rch update
     def update_resplatting_instructor(self):
 
         if type(self.ri) == type(None):
             if self.rm[0] == "relevance zoom":
                 rz = RZoom(self.rm[1])
                 q = (rz,None)
-                ##self.rangeHistory.append(np.copy(self.bounds))
             else:
                 cs = CenterResplat(np.copy(self.bounds), self.rm[1], DEFAULT_RSSI__CR__NOISE_ADDER)
                 q = (None,cs)
@@ -149,7 +135,14 @@ class ResplattingSearchSpaceIterator:
             # log point into range history
             self.rangeHistory.append(nb)
 
-        # TODO: optional, add func. for png here.
+            # update rch here
+            s = [self.bounds, nb, self.SSIHop] + list(self.aua)
+            self.rm[1].load_update_vars(s)
+            self.rm[1].update_rch()
+            self.ri.rzoom = RZoom(self.rm[1])
+
+        # TODO: optional, add update func. for png here
+
         return False
 
     def check_duplicate_range(self,d):

@@ -1,5 +1,6 @@
-from rssi import *
-
+from .contextia_de_lo_vego_de_la_vegas import rssi
+import numpy as np
+import operator
 
 """
 a version of the first chain; used in unit testing
@@ -9,7 +10,7 @@ rchl := cf function identifier
 def test_rch_chain_1(rchl = 1):
 
     rf = np.array([8.0,2.3,3.1,4.5,8.8])
-    dm = euclidean_point_distance
+    dm = rssi.euclidean_point_distance
     dt = 5.0
 
     if rchl == 1:
@@ -20,7 +21,7 @@ def test_rch_chain_1(rchl = 1):
         cf = lambda x, c: x + c >= 2.5 and x - c <= 5.0
 
     kwargs = ['r', rf,dm,cf,dt]
-    rc = RChainHead()
+    rc = rssi.RChainHead()
     rc.add_node_at(kwargs)
     return rc
 
@@ -37,4 +38,4 @@ def sample_rssi_1(rmMode = "relevance zoom", rchl = 1):
 
     rc = test_rch_chain_1(rchl)
     rm = (rmMode, rc)
-    return ResplattingSearchSpaceIterator(bounds, startPoint, columnOrder = None, SSIHop = ssih, resplattingMode = rm)
+    return rssi.ResplattingSearchSpaceIterator(bounds, startPoint, columnOrder = None, SSIHop = ssih, resplattingMode = rm)

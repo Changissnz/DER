@@ -1,4 +1,4 @@
-from search_space_iterator_test_cases import * 
+from .search_space_iterator_test_cases import *
 import unittest
 
 # TODO: write tests on inverted bounds [1,0]
@@ -41,7 +41,7 @@ class TestSearchSpaceIteratorClass(unittest.TestCase):
 
         # check correct endpoint
         ##print("endpoint: ", ssi2.endpoint)
-        assert equal_iterables(ssi2.endpoint,np.array([0.8,0.8,0.8])), "invalid endpoint"
+        assert search_space_iterator.equal_iterables(ssi2.endpoint,np.array([0.8,0.8,0.8])), "invalid endpoint"
 
         # check correct number of elements in cycle
         # loop entirely
@@ -76,7 +76,7 @@ class TestSearchSpaceIteratorClass(unittest.TestCase):
         # print out hop pattern for each
         cycleLengths = []
         for hp in ssi.hopPatterns:
-            s = cycle_hop_pattern(hp)
+            s = search_space_iterator.cycle_hop_pattern(hp)
             cycleLengths.append(len(s))
 
         # all are length 7
@@ -92,8 +92,7 @@ class TestSearchSpaceIteratorClass(unittest.TestCase):
     def test__SearchSpaceIterator__CASE_6_endpoint(self):
         ssi = SearchSpaceIterator_case_6()
         sol = np.array([0.,9.,8.,3.,2.5])
-        ##sol = np.array([10.,9.,8.,3.,2.5])
-        assert equal_iterables(ssi.endpoint,sol), "incorrect endpoint for case 6\ngot {}\nwant {}".format(ssi.endpoint,sol)
+        assert search_space_iterator.equal_iterables(ssi.endpoint,sol), "incorrect endpoint for case 6\ngot {}\nwant {}".format(ssi.endpoint,sol)
 
     # TODO: look into rev__next__
     ###
@@ -172,13 +171,13 @@ class TestSearchSpaceIteratorClass(unittest.TestCase):
         sssi.set_value(sp)
         for i in range(3):
             q = next(sssi)
-            assert equal_iterables(q,ps[1+i])
+            assert search_space_iterator.equal_iterables(q,ps[1+i])
 
         # case 2:
         sssi.set_value(ps[4])
         for i in range(3):
             q = next(sssi)
-            assert equal_iterables(q,ps[5+i])
+            assert search_space_iterator.equal_iterables(q,ps[5+i])
 
     def test__SkewedSearchSpaceIterator__case_3(self):
         sssi = SkewedSearchSpaceIterator_case_3()
@@ -219,7 +218,7 @@ class TestSearchSpaceIteratorClass(unittest.TestCase):
 
         for i in range(3):
             q_ = next(ssi)
-            assert equal_iterables(q_,q[3 + i])
+            assert search_space_iterator.equal_iterables(q_,q[3 + i])
         return -1
 
     def test__SkewedSearchSpaceIterator__case_2(self):

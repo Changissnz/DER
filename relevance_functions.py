@@ -101,42 +101,6 @@ def vf_vector_reference(vr, pw):
         return pw(vr,v)
     return x
 
-##### merge below 2
-
-### list of pairwise functions
-
-## standard functions
-# np.cross
-# np.dot
-# np.multiply
-def ndim_dot_referential():
-    return -1
-
-def ndim_dot_path():
-    return -1
-
-
-# do n-dim degree
-
-"""
-pairwise vector function 1
-"""
-def pairwise_vector_function_1(v1,v2,op):
-    return -1
-
-"""
-uses referential vector and a vector pairwise function that outputs
- a singleton, rv will be the first argument.
-"""
-def vector_function_rv_with_addon_dec(rv, pf, addOn):
-
-    def x(rv1):
-        return addOn(pf(rv,rv1))
-    return x
-
-def vector_function_rv_with_addon_nondec(rv, pf, addOn):
-    return -1
-
 """
 outputs elements by indices
 
@@ -176,18 +140,6 @@ def subvector_selector(addOn, inputType =1, outputType = 1):
 
     return m_
 
-##### TODO: unused
-def is_in(v,b):
-    if type(v) in [type(47.0),type(47)]:
-        return v in b
-    elif is_vector(v):
-        q = indices_of_vector_in_matrix(v,b)
-        return len(q) > 0
-
-lambda__in_subset = lambda x,s: is_in(x,s)
-
-##### END TODO: unused
-
 ## $
 '''
 rangeReq := proper bounds vector
@@ -210,15 +162,6 @@ cf := comparator function on (dist,dt)
 """
 def addon_singleton__bool__criteria_distance_from_reference(rf, dm, dt,cf):
     return lambda v: cf(dm(rf,v),dt)
-
-
-def addon_pwcomp__x():
-    return -1
-
-# RChain is a sequence-like structure of nodes with
-# modification capabilities
-def lambda__vector_modulo(m):
-    return lambda v: v % m
 
 """
 class that acts as a node-like structure,
@@ -367,6 +310,9 @@ class RCInst:
     # rangeReq := bounds
     # rf := point
 
+
+
+
 """
 RChainHead is a node-like structure
 """
@@ -376,6 +322,11 @@ class RChainHead:
         self.s = []
         self.vpath = []
         self.updatePath = {} # node index -> update indices
+
+    def update_rch(self):
+
+        for s_ in self.s:
+            s_.inst_update_var()
 
     ####---
     '''
@@ -535,81 +486,47 @@ def RCHF__point_in_bounds(b):
     rc.add_node_at(kwargs)
     return rc.apply
 
-"""
-this is a relevance zoom with update capabilities that
-is used primarily for generating data in file<ball_comp.py>
-
-update instructions take a pair
-args = (bounds,k)
-p = (nodeIndex, args)
-"""
-def RCH__relevancezoom__specialized(bInf):
-
-    #def qf(v):
-
-    # NOTE: when devising euclidean_point_distance measures
-    '''
-    reference existence
-    vector -> ed vector -> (ed in bounds):bool
-    '''
-    return -1
-
-# CAUTION: start point at left
-
-# TIP: pipeline should use pass args from RSSI to this function to update RCInst
-
 def hops_to_default_noise_range(h):
     return np.array([[(h ** -1) / 2.7, (h ** -1) / 2.3]])
 
-
 #################################### start : ostracio && deletira
-def relevancezoom__update_info_evenly_spaced():
-
-    return -1
 
 """
+
 arguments:
-- updateInfo := (parent bounds, bounds, h, fh, splat type)
+- k :=
+- h := hop value of SSI
 
 return:
-- rf value:
+- matrix, dim (m,k), m the required number of points
 """
-def relevancezoom__update_info(updateInfo):
-    assert updateInfo[4] in {'evenly spaced', 'evenly space w/ noise', 'random'}
+def hops_to_coverage_points__standard(k,h):
 
-    h_ = updateInfo[3](updateInfo[2])
-    nr = None
-    if "noise" in updateInfo[4]:
-        nr = hops_to_default_noise_range(h_)
+    z = np.zeros((k,))
+    o = np.ones((k,))
 
-    if "evenly spaced" in updateInfo[3]:
+    #
+    partition = n_partition_for_bound(np.array([z,o]).T,h)
 
-        # case: improper bounds
-        if not is_proper_bounds_vector(updateInfo[1]):
-            part = SkewedSearchSpaceIterator.n_partition(updateInfo[0],updateInfo[1],h_,nr)
-
-            # remove the first and last element
-            part = part[1:-1]
-        else:
-            part = n_partition_for_bound(updateInfo[1],h_)
-            if "noise" in updateInfo[3]:
-                part = add_noise_to_points_restricted_bounds(updateInfo[1][:,0], updateInfo[1][:,1], part, nr)
-
-            part = part[1:-1]
-
+    # case: odd
+    if h % 2:
+        x = [i for i in range(h + 1) if i % 2]
+    # case: even
     else:
-        if not is_proper_bounds_vector(updateInfo[1]):
-            part = SkewedSearchSpaceIterator.k_random_points_in_bounds(updateInfo[0],updateInfo[1],updateInfo[3])
+        x = [i for i in range(h + 1) if not i % 2]
+    return partition[x]
 
-        else:
-            part = k_random_points_in_bounds(updateInfo[1][:,0],updateInfo[1][:,1],h_)
+# TODO: test this.
+def hops_to_coverage_points_in_bounds(parentBounds,bounds,h):
+    k = bounds.shape[0]
+    cp = hops_to_coverage_points__standard(k,h)
 
-    return part
-
-
-
-def RSSI_pass_update_args_to_RCInst():
-    return -1
+    if is_proper_bounds_vector(bounds):
+        s = [point_on_bounds_by_ratio_vector(bounds,c) for c in cp]
+    else:
+        s = [point_on_improper_bounds_by_ratio_vector(\
+            parentBounds,bounds,c) for c in cp]
+    return np.array(s)
 
 #################################### end : ostracio && deletira
 
@@ -625,10 +542,6 @@ def RCHF__point_in_bounds_subvector_selector(b):
     rc = RChainHead()
     rc.add_node_at(kwargs)
     return rc.apply
-
-def RCHF__point_distance_to_references(r,ed0):
-
-    return -1
 
 from poly_struct import *
 
@@ -776,15 +689,5 @@ def is_valid_subset_sequence(s,n):
 
     m0,m1 = min(q),max(q)
     return m0 == 0 and m1 == n - 1
-
-'''
-'''
-def func__subset__boolvector_to_bool(bv, sseq, boolSetFunc):
-    q = is_valid_subset_sequence(sseq,bv.shape[0])
-
-    return -1
-
-# TODO: boolSet function should use `expresso` to construct AND,OR,NOT
-
 
 ###### END: functions used for relevance zoom
