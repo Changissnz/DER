@@ -264,3 +264,13 @@ def is_line_in_circle(line, circleCenter, circleRadius):
 
 
 euclidean_point_distance = lambda p1, p2: np.sqrt(np.sum((p1 - p2)**2))
+
+def euclidean_point_distance_of_bounds(parentBounds,bounds):
+
+    if is_proper_bounds_vector(bounds):
+        ed = euclidean_point_distance(bounds[:,1],bounds[:,0])
+    else:
+        pd = point_difference_of_improper_bounds(bounds, parentBounds)
+        z = np.zeros((bounds.shape[0],))
+        ed = euclidean_point_distance(z,pd)
+    return ed

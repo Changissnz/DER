@@ -197,32 +197,22 @@ class RCInst:
         self.dm = None
         self.cf = None
         self.dt = None
-        ##self.ct = ()
         self.updateFunc = {}
         self.updateInfo = None
         self.updatePath = {} # k = index -> function argument indices in updateInfo
 
     def inst_update_var(self):
+
         for k,v in self.updatePath.items():
-            q = [x for (i,x) in enumerate(self.updateInfo) if i in v]
+
+            # fetch function args
+            q = []
+            for v_ in v:
+                q.append(self.updateInfo[v_])
+
             f = self.updateFunc[k]
             x = f(*tuple(q))
             self.update_var(k,x)
-
-    """
-    loads initial arguments for update;
-
-    standard case is:
-
-    updateInfo := (parent bounds, bounds, h, fh, splat type)
-    """
-    ###
-    '''
-    def load_update_inst(self,updateInfo,updateVar):
-        assert updateVar in {"rf","dm","cf","dt"}
-        self.updateInfo[updateVar] = updateInfo
-    '''
-    ###
 
     def load_update_info(self,updateInfo):
         self.updateInfo = updateInfo
@@ -230,14 +220,14 @@ class RCInst:
     def update_var(self,k,v):
         if k == "rf":
             self.rf = v
-        if k == "dm":
+        elif k == "dm":
             self.dm = v
-        if k == "cf":
+        elif k == "cf":
             self.cf = v
         elif k == "dt":
             self.dt = v
         else:
-            raise ValueError("invalid key {}".format(k))
+            raise ValueError("invalid key _{}_".format(k))
 
     """
     """
@@ -304,15 +294,6 @@ class RCInst:
                 self.f = lambda v: self.cf(v)#,*self.ct)
         return deepcopy(self.f)
 
-    # distance threshold is float
-    ##dt = 20.0
-
-    # rangeReq := bounds
-    # rf := point
-
-
-
-
 """
 RChainHead is a node-like structure
 """
@@ -339,8 +320,11 @@ class RChainHead:
 
     def load_update_vars(self,varList):
         for k,v in self.updatePath.items():
-            uv = [v_ for (i,v_) in enumerate(v)]
-            self.s[k].load_update_info(uv)
+            vl = []
+            for (i,v2) in enumerate(varList):
+                if i in set(v):
+                    vl.append(v2)
+            self.s[k].load_update_info(vl)
 
     ####---
 
@@ -518,6 +502,7 @@ def hops_to_coverage_points__standard(k,h):
 
 # TODO: test this.
 def hops_to_coverage_points_in_bounds(parentBounds,bounds,h):
+
     k = bounds.shape[0]
     cp = hops_to_coverage_points__standard(k,h)
 
@@ -527,6 +512,19 @@ def hops_to_coverage_points_in_bounds(parentBounds,bounds,h):
         s = [point_on_improper_bounds_by_ratio_vector(\
             parentBounds,bounds,c) for c in cp]
     return np.array(s)
+
+'''
+
+'''
+def coverage_ratio_to_distance(boundsEDistance, h,cr):
+    assert h >= 1.0, "invalid h"
+    assert cr >= 0.0 and cr <= 1.0, "invalid cr"
+
+    total = boundsEDistance / h
+    return total * cr
+
+
+
 
 #################################### end : ostracio && deletira
 

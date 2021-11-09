@@ -21,3 +21,7 @@ SCHEDULE
 
 11/7/21
 - Working on additional components for `numerical space sample generator`
+
+11/8/21
+- Worked on `class<RChainHead>`.
+- Test for `relevance_functions_test2. sample_rssi_1_with_update` now works

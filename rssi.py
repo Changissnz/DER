@@ -60,6 +60,7 @@ class ResplattingSearchSpaceIterator:
         self.declare_new_ssi(np.copy(self.bounds), np.copy(self.startPoint))
 
         self.ri = None
+        assert type(additionalUpdateArgs) == tuple, "invalid additionalUpdateArgs"
         self.aua = additionalUpdateArgs
         self.update_resplatting_instructor()
 
@@ -197,6 +198,34 @@ class ResplattingSearchSpaceIterator:
                 ar = self.fix_zero_size_activation_range(ar)
             self.ri.rzoomBoundsCache.append(ar)
 
+
+    """
+    new activation range is
+    ar[0], midpoint(ar[0],next(ar[0]))
+    """
+    def fix_zero_size_activation_range(self, ar):
+        assert equal_iterables(ar[:,0],ar[:,1]), "not zero-size"
+
+        # save ssi location
+        q = self.ssi.de_value()
+        #
+        self.ssi.set_value(ar[:,0])
+
+        e1 = next(self.ssi)
+        self.ssi.rev__next__()
+        e2 = self.ssi.rev__next__()
+        print("E1 ", e1)
+        print("E2 ", e2)
+        e3 = np.array([e1,e2]).T
+
+        rv = np.ones((e3.shape[0],)) / 2.0
+        p = point_on_improper_bounds_by_ratio_vector(\
+            self.bounds,e3,rv)
+
+        e3[:,1] = p
+        return e3
+
+
     @staticmethod
     def column_order(k,mode = "random"):
         assert mode in ["random","ascending","descending"]
@@ -277,3 +306,25 @@ def rssi__display_n_bounds(rssi, n):
         rssi._summary()
         print("\n--------------------------------------------------")
     return -1
+
+###
+## def vector_ratio_improper(parentBounds,bounds,point):
+###
+
+"""
+def fix_zero_size_activation_range(self, ar):
+    assert equal_iterables(ar[:,0],ar[:,1]), "not zero-size"
+
+    # save ssi location
+    q = self.ssi.de_value()
+
+    #
+    self.ssi.set_value(ar[:,0])
+
+    # TODO: below (e1,e2) can be revised to other values
+    e1 = next(self.ssi)
+    self.ssi.rev__next__()
+    e2 = self.ssi.rev__next__()
+
+    return np.array([e1,e2]).T
+"""
