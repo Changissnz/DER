@@ -689,3 +689,40 @@ def is_valid_subset_sequence(s,n):
     return m0 == 0 and m1 == n - 1
 
 ###### END: functions used for relevance zoom
+
+
+###### a sample RCH w/ update functionality
+
+
+'''
+vector -> ed vector -> (ed in bounds):bool
+'''
+def sample_rch_1_with_update(parentBounds, bounds, h, coverageRatio):
+
+    def dm(rp,v):
+        return np.array([euclidean_point_distance(v,rp_) for rp_ in rp])
+
+    def cf(ds,dt_):
+        return np.any(ds <= dt_)
+
+    def update_dt_function(parentBounds,bounds,h,coverageRatio):
+        return (euclidean_point_distance_of_bounds(parentBounds,bounds) / h)\
+                    * coverageRatio
+
+    rch = RChainHead()
+    # add the node
+    rf = hops_to_coverage_points_in_bounds(parentBounds,bounds,h)
+    dm = dm
+    cf = cf
+    ed = euclidean_point_distance_of_bounds(parentBounds,bounds)
+    dt = coverage_ratio_to_distance(ed,9,coverageRatio)
+
+    kwargs = ['r',rf,dm,cf,dt]
+    rch.add_node_at(kwargs)
+
+    # add update functionality
+    rch.s[0].updateFunc = {'rf': hops_to_coverage_points_in_bounds,\
+            'dt': update_dt_function}
+    rch.s[0].updatePath = {'rf': [0,1,2],'dt':[0,1,2,3]}
+    rch.updatePath = {0: [0,1,2,3]}
+    return rch

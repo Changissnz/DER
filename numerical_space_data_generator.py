@@ -1,7 +1,7 @@
 from rssi import *
 
 DEFAULT_SINGLE_WRITE_SIZE = 2000
-cr = lambda x: round(float(x),5)
+
 
 '''
 generates data into file
@@ -9,7 +9,7 @@ generates data into file
 class NSDataInstructions:
 
     '''
-    bInf := (bounds, startPoint, columnOrder, SSIHop)
+    bInf := (bounds, startPoint, columnOrder, SSIHop, additionalUpdateArgs)
     rm := (mode := `relevance zoom` | `prg` | sequence::(relevant points), RCH)
     sp := # of resplat bounds | # of resplat samples
     '''
@@ -33,15 +33,14 @@ class NSDataInstructions:
             s = self.filePath[::-1]
             q = s.find('/')
             s = s[q + 1:][::-1]
+            print("FP ",s)
 
-            if not os.path.isdir(self.filePath):
+            # make dir
+            if not os.path.isdir(s):
                 # make directory
-                s = self.filePath[::-1]
-                q = s.find('/')
-                s = s[q + 1:][::-1]
                 os.mkdir(s)
                 modeia = 'w'
-                
+
         self.fp = open(self.filePath,modeia)
         return
 
@@ -55,7 +54,7 @@ class NSDataInstructions:
 
         #bounds,star
         self.rssi = ResplattingSearchSpaceIterator(self.bInf[0], self.bInf[1],\
-                self.bInf[2],self.bInf[3],delaani)
+                self.bInf[2],self.bInf[3],delaani,additionalUpdateArgs = self.bInf[4])
         return
 
     # TODO: not tested
@@ -92,11 +91,15 @@ class NSDataInstructions:
                     break
                 q.append(nx)
                 qc += 1
+
         return q
 
     def next_batch_(self):
         q = self.next_batch()
-
         if type(q) != type(None):
-            q = [vector_to_string(q_,cr) for q_ in q]
+            q = [vector_to_string(q_,cr) + "\n" for q_ in q]
             self.fp.writelines(q)
+
+    def close(self):
+        self.fp.close()
+        self.fp = None

@@ -639,10 +639,11 @@ def floorceil_to_n_places(f, mode, places = 5):
 ################################## END: cast functions
 
 #
+cr = lambda x: round(float(x),5)
 
 # TODO: rename to `iterable`
 def vector_to_string(v, castFunc = int):
-    assert castFunc in [int,float, float_func], "invalid cast func"
+    assert castFunc in [int,float, float_func,cr], "invalid cast func"
     if len(v) == 0: return ""
 
     s = ""
