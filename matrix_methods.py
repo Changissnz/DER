@@ -805,7 +805,7 @@ def point_difference_of_improper_bounds(improperBounds,parentBounds):
 '''
 def split_improper_bound(properBounds,improperBounds,checkPoints = True):
     if checkPoints:
-        assert point_in_bounds(properBounds,improperBounds[:,0]), "end0 of bounds not in proper bounds"
+        assert point_in_bounds(properBounds,improperBounds[:,0]), "end0 of bounds not in proper bounds,\npoint {}\nbounds {}".format(improperBounds[:,0],properBounds)
         assert point_in_bounds(properBounds,improperBounds[:,1]), "end1 of bounds not in proper bounds"
 
     # case: improperBounds actually proper

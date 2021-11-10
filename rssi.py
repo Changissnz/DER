@@ -93,24 +93,27 @@ class ResplattingSearchSpaceIterator:
     instance for the given bounds
     '''
     def declare_new_ssi(self,bounds, startPoint):
-
+        ##
+        """
         print("[d]eclaring new ssi w/ bounds")
         print(bounds)
         print("##$#")
+        """
+        ##
 
         # if no specified order, default is descending
         if type(self.columnOrder) == type(None):
             self.columnOrder =ResplattingSearchSpaceIterator.column_order(bounds.shape[0],"descending")
 
         if is_proper_bounds_vector(bounds):
-            print("making reg")
+            ##print("making reg")
             self.ssi = SearchSpaceIterator(bounds, startPoint, self.columnOrder, self.SSIHop,cycleOn = True)
         else: # make SkewedSearchSpaceIterator
-            print("making skew")
+            ##print("making skew")
             self.ssi = SkewedSearchSpaceIterator(bounds,self.bounds,startPoint,self.columnOrder,self.SSIHop,cycleOn = True)
 
     # CAUTION: only rm[0] == `relevance zoom` has rch update
-    def update_resplatting_instructor(self):
+    def update_resplatting_instructor(self,nbs = None):
 
         if type(self.ri) == type(None):
             if self.rm[0] == "relevance zoom":
@@ -124,14 +127,26 @@ class ResplattingSearchSpaceIterator:
             return False
 
         if self.rm[0] == "relevance zoom":
-            print("X declaring new")
-            nb = self.save_rzoom_bounds_info()
-            if type(nb) == type(None): return True
+            ##print("X declaring new")
+
+            # draw from cache
+            if type(nbs) == type(None):
+                nb = self.save_rzoom_bounds_info()
+                if type(nb) == type(None): return True
+                sp = np.copy(nb[:,0])
+            else:# use arg<nb>
+                nb = nbs[0]
+                sp = nbs[1]
+
+                print("NB")
+                print(nb)
+                print("SP")
+                print(sp)
 
             if self.check_duplicate_range(nb):
                 return True
 
-            self.declare_new_ssi(nb,np.copy(nb[:,0]))
+            self.declare_new_ssi(nb,sp)
 
             # log point into range history
             self.rangeHistory.append(nb)
@@ -163,7 +178,7 @@ class ResplattingSearchSpaceIterator:
                  self.ri.rzoom.activationRange = np.vstack((self.ri.rzoom.activationRange,\
                     self.ri.rzoom.activationRange)).T
             self.ri.rzoom.activationRanges.append(self.ri.rzoom.activationRange)
-        print("\tLR")
+        ##print("\tLR")
         self.load_activation_ranges()
 
         # make the next rzoom
@@ -188,7 +203,6 @@ class ResplattingSearchSpaceIterator:
         # TODO: verbose
         ##print("loading activation ranges ", len(self.ri.rzoom.activationRanges))
         additions = []
-        print("LEN ", len(self.ri.rzoom.activationRanges))
         while len(self.ri.rzoom.activationRanges) > 0:
             # pop the activation range
             ar = self.ri.rzoom.activationRanges.pop(0)
@@ -214,14 +228,13 @@ class ResplattingSearchSpaceIterator:
         e1 = next(self.ssi)
         self.ssi.rev__next__()
         e2 = self.ssi.rev__next__()
-        print("E1 ", e1)
-        print("E2 ", e2)
-        e3 = np.array([e1,e2]).T
 
+        ##print("E1 ", e1)
+        ##print("E2 ", e2)
+        e3 = np.array([e1,e2]).T
         rv = np.ones((e3.shape[0],)) / 2.0
         p = point_on_improper_bounds_by_ratio_vector(\
             self.bounds,e3,rv)
-
         e3[:,1] = p
         return e3
 
@@ -306,25 +319,3 @@ def rssi__display_n_bounds(rssi, n):
         rssi._summary()
         print("\n--------------------------------------------------")
     return -1
-
-###
-## def vector_ratio_improper(parentBounds,bounds,point):
-###
-
-"""
-def fix_zero_size_activation_range(self, ar):
-    assert equal_iterables(ar[:,0],ar[:,1]), "not zero-size"
-
-    # save ssi location
-    q = self.ssi.de_value()
-
-    #
-    self.ssi.set_value(ar[:,0])
-
-    # TODO: below (e1,e2) can be revised to other values
-    e1 = next(self.ssi)
-    self.ssi.rev__next__()
-    e2 = self.ssi.rev__next__()
-
-    return np.array([e1,e2]).T
-"""
