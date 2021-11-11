@@ -41,7 +41,6 @@ def sample_rssi_1_with_update():
     cv = 0.4
 
     rch = sample_rch_1_with_update(b,pb,h,cv)
-
     ##
     r = ResplattingSearchSpaceIterator(b, np.copy(b[:,0]), None, h,\
         resplattingMode = ("relevance zoom",rch), additionalUpdateArgs = (cv,))

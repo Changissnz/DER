@@ -653,7 +653,7 @@ def vector_to_string(v, castFunc = int):
 
 # TODO: untested
 def string_to_vector(s, castFunc = int):
-    assert castFunc in [float, float_func, int_func], "invalid cast func"
+    assert castFunc in [float, float_func, int_func,cr], "invalid cast func"
 
     def next_item(s):
         indo = len(s)

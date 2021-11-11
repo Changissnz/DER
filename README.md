@@ -29,3 +29,5 @@ SCHEDULE
 11/11/21
 - `class<ChainedLagrangePolySolver>` will fail on
 some point-set cases.
+- Starting work on `class<MessageStreamer>`:
+  - requires 3rd-party libraries => project needs a `requirements` file
