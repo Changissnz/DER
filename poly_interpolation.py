@@ -79,6 +79,7 @@ class LagrangePolySolver:
     """
     def lagrange_basis(self, x, pointIndex):
         v = 1.0
+
         for i in range(len(self.ps)):
             if i == pointIndex:
                 continue
@@ -90,7 +91,8 @@ class LagrangePolySolver:
                 #return 0
                 print("NOT GOOD: ", self.ps[pointIndex][0], " X2 ", self.ps[i][0])
                 #v = 0
-            v = v * float(num) / float(den)
+
+            v = v * zero_div(float(num),float(den),1.0)
         return v
 
     def bounds_for_x(self, returnType):
@@ -101,6 +103,9 @@ class LagrangePolySolver:
         return int(math.ceil(self.minumum)), int(math.floor(self.maximum))
 
     def output_by_lagrange_basis(self, x):
+        # CASE: x is 0-length
+        ##if self.
+
         y = 0
         for i in range(len(self.ps)):
             y += self.ps[i][1] * self.lagrange_basis(x, i)
@@ -591,8 +596,8 @@ class LagrangePolySolver:
         return areas
 
     ##### START: repr methods
-    """
 
+    """
     """
     def form_point_sequence(self, reverse = False, hopIncrement = DEFAULT_TRAVELLING_HOP, capture = True):
         assert hopIncrement > 0, "hop increment has to be +"

@@ -25,3 +25,7 @@ SCHEDULE
 11/8/21
 - Worked on `class<RChainHead>`.
 - Test for `relevance_functions_test2. sample_rssi_1_with_update` now works
+
+11/11/21
+- `class<ChainedLagrangePolySolver>` will fail on
+some point-set cases.
