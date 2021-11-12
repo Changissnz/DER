@@ -3,6 +3,9 @@
 This project is called DER. I will let the interpretation
 of that fall upon your shoulders.
 
+Update: 11/12
+
+The DER is a digital tool still in progress. I am planning for the completion to not be utilized as an object as dark as the sword I am talking about by dragging this sentence past the appropriate length but yet still fine with it under the enthusiasm necessary for such expressivity that can only defy certain principles with both powers and potentials necessary to conduct required requirements that may?
 
 SCHEDULE
 --------
@@ -31,3 +34,6 @@ SCHEDULE
 some point-set cases.
 - Starting work on `class<MessageStreamer>`:
   - requires 3rd-party libraries => project needs a `requirements` file
+
+11/12/21
+- add file `point_weight_functions`; requires clean-up.
