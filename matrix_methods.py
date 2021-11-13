@@ -791,14 +791,38 @@ def point_in_improper_bounds(parentBounds,bounds,p):
         if not rf(p_,i): return False
     return True
 
-# CAUTION: no assertion coded
 """
 point difference of improper bounds is a non-negative vector
 """
 def point_difference_of_improper_bounds(improperBounds,parentBounds):
+
+    assert improperBounds.shape == parentBounds.shape, "bounds must have equal shape"
+
+    diff = []
+    for i in range(improperBounds.shape[0]):
+        r = improperBounds[i]
+        j = parentBounds[i]
+
+        # cassius: proper dim.
+        if r[0] < r[1]:
+            d = r[1] - r[0]
+        # cassius: improper dim.
+        else:
+            d = j[1] - r[0]
+            d += (r[1] - j[0])
+
+        """
+        print("D")
+        print(d)
+        print("**")
+        """
+        diff.append(d)
+    return np.array(diff)
+    """
     # get the first half
     return (parentBounds[:,1] - improperBounds[:,0]) +\
         (improperBounds[:,1] - parentBounds[:,0])
+    """
 
 # TODO: unused
 '''
@@ -809,20 +833,34 @@ def split_improper_bound(properBounds,improperBounds,checkPoints = True):
         assert point_in_bounds(properBounds,improperBounds[:,1]), "end1 of bounds not in proper bounds"
 
     # case: improperBounds actually proper
+    """
     if is_proper_bounds_vector(improperBounds): return [improperBounds]
 
     # first half
     h1 = np.vstack((improperBounds[:,0],properBounds[:,1])).T
     h2 = np.vstack((properBounds[:,0], improperBounds[:,1])).T
     return [h1,h2]
+    """
+
+    q1,q2 = [],[]
+    for i in range(properBounds.shape[0]):
+        r = improperBounds[i]
+        # cassius: proper dim.
+        if r[0] < r[1]:
+            s1,s2 = np.copy(r),np.array([np.nan,np.nan])
+        # cassius: improper dim.
+        else:
+            s1,s2 = np.array([r[0],properBounds[i,1]]), np.array([properBounds[i,0],r[1]])
+        q1.append(s1)
+        q2.append(s2)
+    return np.array(q1),np.array(q2)
 
 def point_on_bounds_by_ratio_vector(b,rv):
     x = rv * (b[:,1] - b[:,0])
     return b[:,0] + x
 
-def point_on_improper_bounds_by_ratio_vector(parentBounds,bounds,rv):
+def point_on_improper_bounds_by_ratio_vector(parentBounds,bounds,rv,roundDepth = 5):
     ib = split_improper_bound(parentBounds,bounds,checkPoints = True)
-
     q = point_difference_of_improper_bounds(bounds,parentBounds)
     pd1 = ib[0][:,1] - ib[0][:,0] # point diff
     s = rv * q # point add
@@ -839,7 +877,7 @@ def point_on_improper_bounds_by_ratio_vector(parentBounds,bounds,rv):
             px = p2[i] + s_
         p2[i] = px
 
-    return p2
+    return np.round(p2,roundDepth)
 
 def vector_ratio(bound,point):
     assert point_in_bounds(bound,point), "point not in bounds"

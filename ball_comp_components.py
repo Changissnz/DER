@@ -1,4 +1,5 @@
 from numerical_generator import *
+from point_weight_function import * 
 from collections import Counter
 
 '''

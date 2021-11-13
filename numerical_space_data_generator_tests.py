@@ -50,24 +50,14 @@ def test__sample_nsdi_12():
     q.batch_summary()
 
 def test__sample_nsdi_13():
-    #bounds = np.array([[0,1.2],[-0.5,1.7],[-1.0,0.8],[-0.5,1.2]])
-    b1 = np.array([[0.9,1.2],[1.2,1.7],[-1.0,-0.5],[1.0,1.55]])
-    b2 = np.array([[0.7,0.05],[1.6,0.2],[-1.0,0.5],[1.1,0.2]])
-    bx = np.array([b1,b2])
+    b1 = np.array([[0.9,1.2],[1.2,1.7],[-1.0,-0.5],[0.7,1.1]])
+    bx = np.array([b1])
 
-    print(bx)
-
-
-    ##return -1
     q = sample_nsdi_1(bx,"tests/sneaht.txt")
     q.make_rssi()
 
-    q.next_batch_()
-    print("XS")
-    return -1
-    c = 0
-    while q.fp and c < 2:
+    while q.fp:
         q.next_batch_()
-        c += 1
-    print("# batches: ",c)
+    assert q.c == 3, "incorrect number of batches"
+
     q.batch_summary()

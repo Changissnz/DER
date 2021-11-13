@@ -138,15 +138,12 @@ class ResplattingSearchSpaceIterator:
                 nb = nbs[0]
                 sp = nbs[1]
 
-                print("NB")
-                print(nb)
-                print("SP")
-                print(sp)
-
             if self.check_duplicate_range(nb):
                 return True
 
+            ##print("declaring new ssi")
             self.declare_new_ssi(nb,sp)
+            ##print("after")
 
             # log point into range history
             self.rangeHistory.append(nb)
@@ -156,7 +153,6 @@ class ResplattingSearchSpaceIterator:
             self.rm[1].load_update_vars(s)
             self.rm[1].update_rch()
             self.ri.rzoom = RZoom(self.rm[1])
-
         # TODO: optional, add update func. for png here
 
         return False
@@ -209,7 +205,11 @@ class ResplattingSearchSpaceIterator:
 
             # case: 0-size, modify activation range
             if equal_iterables(ar[:,0],ar[:,1]):
+                ##print("FIXING ")
+                ##print(ar)
                 ar = self.fix_zero_size_activation_range(ar)
+                ##print("\t**")
+                ##print(ar)
             self.ri.rzoomBoundsCache.append(ar)
 
 
@@ -233,9 +233,27 @@ class ResplattingSearchSpaceIterator:
         ##print("E2 ", e2)
         e3 = np.array([e1,e2]).T
         rv = np.ones((e3.shape[0],)) / 2.0
+
+        """
+        print("BOUNDS")
+        print(self.bounds)
+        print()
+
         p = point_on_improper_bounds_by_ratio_vector(\
             self.bounds,e3,rv)
+        print("E3")
+        print(e3)
+        print("BOUNDS")
+        print(self.bounds)
+        """
+
+        p = point_on_improper_bounds_by_ratio_vector(\
+            self.bounds,e3,rv)
+
         e3[:,1] = p
+
+        self.ssi.set_value(q)
+
         return e3
 
 

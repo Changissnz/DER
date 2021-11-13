@@ -65,8 +65,7 @@ class NSDataInstructions:
         else:
             delaani = self.rm
 
-        if type(self.rm[0]) != str and self.c:
-            print("YAHH")
+        if type(self.rm[0]) != str and self.c > 1:
             if len(self.rm[0]) == 0:
                 self.terminated = True
                 return None
@@ -77,12 +76,21 @@ class NSDataInstructions:
 
             # start point is left
             DEFAULT_START_POINT = np.copy(q[:,0])
+
+            """
+                ###
+            print("setting new bounds")
+            print(q)
+            print(DEFAULT_START_POINT)
+            print("-------------------")
+                ###
+            """
+            
             self.rssi.update_resplatting_instructor((q,DEFAULT_START_POINT))
                 ##self.rssi.ssi.set_value(DEFAULT_START_POINT)
-            """
-            self.rssi = ResplattingSearchSpaceIterator(q, DEFAULT_START_POINT,\
-                    self.bInf[2],self.bInf[3],delaani)
-            """
+            #self.rssi = ResplattingSearchSpaceIterator(q, DEFAULT_START_POINT,\
+            #        self.bInf[2],self.bInf[3],delaani)
+
         if self.rssi.terminated:
             return None
 

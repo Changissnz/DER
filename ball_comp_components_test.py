@@ -1,4 +1,5 @@
-from ball_comp_components import *
+from ball_comp_components_test_cases import *
+import unittest
 
 ######## start: class<SetMerger> tests ############
 
@@ -33,82 +34,68 @@ def sample_set_sequence_9():
         set((1,2,4)),set((8,9,10)),\
         set((2,3,4)),set((0,1,2))]
 
-def test__SetMerger__is_closed_implication_for_merge():
+class TestBallCompComponents(unittest.TestCase):
 
-    # test each sample set sequence
-    s = sample_set_sequence_1()
-    q = SetMerger.is_closed_implication_for_merge(s,1,2)
-    assert not q
-    q = SetMerger.is_closed_implication_for_merge(s,1,1)
-    assert q
 
-    s = sample_set_sequence_2()
-    q = SetMerger.is_closed_implication_for_merge(s,1,2)
-    assert not q
-    q = SetMerger.is_closed_implication_for_merge(s,1,1)
-    assert not q
+    def test__SetMerger__is_closed_implication_for_merge(self):
 
-    s = sample_set_sequence_3()
-    q = SetMerger.is_closed_implication_for_merge(s,1,2)
-    assert not q
-    q = SetMerger.is_closed_implication_for_merge(s,1,1)
-    assert not q
-    q = SetMerger.is_closed_implication_for_merge(s,2,1)
-    assert not q
+        # test each sample set sequence
+        s = sample_set_sequence_1()
+        q = SetMerger.is_closed_implication_for_merge(s,1,2)
+        assert not q
+        q = SetMerger.is_closed_implication_for_merge(s,1,1)
+        assert q
 
-    s = sample_set_sequence_4()
-    q = SetMerger.is_closed_implication_for_merge(s,1,2)
-    assert not q
+        s = sample_set_sequence_2()
+        q = SetMerger.is_closed_implication_for_merge(s,1,2)
+        assert not q
+        q = SetMerger.is_closed_implication_for_merge(s,1,1)
+        assert not q
 
-    s = sample_set_sequence_5()
-    q = SetMerger.is_closed_implication_for_merge(s,1,2)
-    assert q
+        s = sample_set_sequence_3()
+        q = SetMerger.is_closed_implication_for_merge(s,1,2)
+        assert not q
+        q = SetMerger.is_closed_implication_for_merge(s,1,1)
+        assert not q
+        q = SetMerger.is_closed_implication_for_merge(s,2,1)
+        assert not q
 
-    s = sample_set_sequence_6()
-    q = SetMerger.is_closed_implication_for_merge(s,1,3)
-    assert not q
+        s = sample_set_sequence_4()
+        q = SetMerger.is_closed_implication_for_merge(s,1,2)
+        assert not q
 
-    s = sample_set_sequence_7()
-    q = SetMerger.is_closed_implication_for_merge(s,1,2)
-    assert q
+        s = sample_set_sequence_5()
+        q = SetMerger.is_closed_implication_for_merge(s,1,2)
+        assert q
 
-    s = sample_set_sequence_8()
-    q = SetMerger.is_closed_implication_for_merge(s,1,2)
-    assert not q
-    q = SetMerger.is_closed_implication_for_merge(s,1,1)
-    assert q
+        s = sample_set_sequence_6()
+        q = SetMerger.is_closed_implication_for_merge(s,1,3)
+        assert not q
 
-def test__SetMerger__merges_at_index():
+        s = sample_set_sequence_7()
+        q = SetMerger.is_closed_implication_for_merge(s,1,2)
+        assert q
 
-    ##
-    s = sample_set_sequence_6()
-    sm = SetMerger(s)
+        s = sample_set_sequence_8()
+        q = SetMerger.is_closed_implication_for_merge(s,1,2)
+        assert not q
+        q = SetMerger.is_closed_implication_for_merge(s,1,1)
+        assert q
 
-    for i in range(len(s)):
-        q = sm.merges_at_index(i)
+    def test__SetMerger__merges_at_index(self):
 
-        if i == 3:
-            assert len(q) > 0
-            continue
-        assert len(q) == 0
+        ##
+        s = sample_set_sequence_6()
+        sm = SetMerger(s)
 
-    ## TODO: place this elsewhere | add onto
-    s = sample_set_sequence_9()
-    sm = SetMerger(s)
+        for i in range(len(s)):
+            q = sm.merges_at_index(i)
 
-    for i in range(len(s)):
-        q = sm.possible_merges_at_index(i)
-        print("merges @ ", i)
-        print(q)
-
-        continue
-
-        if i == 3:
-            assert len(q) > 0
-            continue
-        assert len(q) == 0
-
-    return -1
+            if i == 3:
+                assert len(q) > 0
+                continue
+            assert len(q) == 0
+        return
 
 
 
@@ -122,6 +109,7 @@ def test__SetMerger__merges_at_index():
 def test__Ball__intersection2():
     b3,b4 = sample_ball_3(),sample_ball_4()
     q = Ball.does_intersect(b3,b4)
+    assert
     print("int? ",q)
 
     ai = Ball.area_intersection_estimation(b3,b4)
@@ -181,3 +169,6 @@ def test__Ball__intersection2_():
     return
 
 ######## end: class<Ball> tests ############
+
+if __name__ == '__main__':
+    unittest.main()

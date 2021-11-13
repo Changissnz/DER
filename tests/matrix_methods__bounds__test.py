@@ -53,3 +53,73 @@ class TestNumericalGeneratorClass(unittest.TestCase):
 
         vr2 = matrix_methods.vector_ratio_improper(pb,b,p2)
         assert matrix_methods.equal_iterables(vr2,np.array([0.9,0.9,0.8,0.1])), "incorrect case 1.2"
+
+
+    def test__point_difference_of_improper_bounds(self):
+
+        pb = np.array([[0,1.00],\
+                        [0,1.00],\
+                        [0,1.00],\
+                        [0,1.00]])
+
+        # one index is improper
+        bp1 = np.array([[0.5,0.75],\
+                        [0.25,0.50],\
+                        [0.9,0.1],\
+                        [0,0.27]])
+
+        # two indices are improper
+        bp2 = np.array([[0.5,0.75],\
+                        [0.5,0.15],\
+                        [0.9,0.1],\
+                        [0,0.27]])
+
+        # all indices are improper
+        bp3 = np.array([[0.5,0.17],\
+                        [0.5,0.15],\
+                        [0.9,0.1],\
+                        [0.72,0.3]])
+
+        q = matrix_methods.point_difference_of_improper_bounds(bp1,pb)
+        s1 = np.array([0.25,0.25,0.2,0.27])
+        assert matrix_methods.equal_iterables(q,s1)
+
+        q = matrix_methods.point_difference_of_improper_bounds(bp2,pb)
+        s2 = np.array([0.25,0.65,0.2,0.27])
+        assert matrix_methods.equal_iterables(q,s2)
+
+        q = matrix_methods.point_difference_of_improper_bounds(bp3,pb)
+        s3 = np.array([0.67,0.65,0.2,0.58])
+        assert matrix_methods.equal_iterables(q,s3)
+        return
+
+    def test__point_on_improper_bounds_by_ratio_vector(self):
+
+        pb = np.array([[0,1.00],\
+                        [0,1.00],\
+                        [0,1.00],\
+                        [0,1.00]])
+
+        # one index is improper
+        bp1 = np.array([[0.5,0.75],\
+                        [0.25,0.50],\
+                        [0.9,0.1],\
+                        [0,0.27]])
+
+        # half
+        rv = np.array([0.5,0.5,0.5,0.5])
+        p1 = matrix_methods.point_on_improper_bounds_by_ratio_vector(pb,bp1,rv)
+        assert matrix_methods.equal_iterables(p1,[0.625,0.375,0.,0.135])
+
+        # max dominant
+        rv = np.array([0.9,0.9,0.9,0.9])
+        p1 = matrix_methods.point_on_improper_bounds_by_ratio_vector(pb,bp1,rv)
+        assert matrix_methods.equal_iterables(p1,[0.725,0.475,0.08,0.243])
+
+        # min dominant
+        rv = np.array([0.1,0.1,0.1,0.1])
+        p1 = matrix_methods.point_on_improper_bounds_by_ratio_vector(pb,bp1,rv)
+        assert matrix_methods.equal_iterables(p1,[0.525,0.275,0.92,0.027])
+
+if __name__ == '__main__':
+    unittest.main()
