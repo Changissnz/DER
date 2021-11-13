@@ -39,3 +39,6 @@ some point-set cases.
 - add file `point_weight_functions`; requires clean-up.
 - `class<NSDataInstructions>` does not work for the following case:
     - type(rm[0]) is np.ndarray
+
+11/13/21
+- work from yesterday is no longer required. 
