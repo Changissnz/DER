@@ -228,25 +228,9 @@ class ResplattingSearchSpaceIterator:
         e1 = next(self.ssi)
         self.ssi.rev__next__()
         e2 = self.ssi.rev__next__()
-
-        ##print("E1 ", e1)
-        ##print("E2 ", e2)
         e3 = np.array([e1,e2]).T
+        
         rv = np.ones((e3.shape[0],)) / 2.0
-
-        """
-        print("BOUNDS")
-        print(self.bounds)
-        print()
-
-        p = point_on_improper_bounds_by_ratio_vector(\
-            self.bounds,e3,rv)
-        print("E3")
-        print(e3)
-        print("BOUNDS")
-        print(self.bounds)
-        """
-
         p = point_on_improper_bounds_by_ratio_vector(\
             self.bounds,e3,rv)
 

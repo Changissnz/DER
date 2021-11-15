@@ -62,7 +62,7 @@ class BallComp:
 
         # potentialSpace is staticvar
         self.at,self.au,self.ap = None,None,self.potential_space()
-        self.updateCache =
+        self.updateCache = []
 
     def new_ball(self,p):
         b = Ball.one_ball(p,[p])
@@ -79,13 +79,13 @@ class BallComp:
     def add_point(self, p):
 
         # case: make new ball, maxBalls not filled yet
-        if len(self.balls) < self.maxBalls:
+        if len(self.balls) < self.ma                  xBalls:
             b = self.new_ball(p)
             self.balls.append(b)
             return
-
         #
-        return -1
+        print("NULL")
+        return
 
     ####################### START: ball neighbor methods #####
 
@@ -361,7 +361,7 @@ class BallComp:
 
         # case: update
         else:
-
+            return -1
         return -1
 
     '''
@@ -370,7 +370,8 @@ class BallComp:
     def update_ball_info_cache(self):
 
         for b in self.balls:
-            q1 = b.radiusDelta[]
+            return -1
+            ##q1 = b.radiusDelta[]
 
 
         return -1
@@ -438,7 +439,7 @@ class BallComp:
         def args_for_threeway_intersection_estimation(bs_):
             i = argmax([b.area() for b in bs_])
             q = [bs[j] for j in range(len(bs)) if j != i]
-            return q[0],q[1] bs[i]
+            return q[0],q[1],bs[i]
 
         # determine area of each ball
         a = sum([b.area() for b in bs])

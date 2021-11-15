@@ -34,6 +34,19 @@ def sample_set_sequence_9():
         set((1,2,4)),set((8,9,10)),\
         set((2,3,4)),set((0,1,2))]
 
+def h(b1,b2):
+    print("**")
+    b12 = Ball.area_intersection_estimation_(b1,b2)
+    b21 = Ball.area_intersection_estimation_(b2,b1)
+    bae = Ball.area_intersection_estimation(b1,b2)
+
+    print("\tarea estimation")
+    print("b1->2: ",b12)
+    print("b2->1: ",b21)
+    print("est. area: ",bae)
+    print("**")
+    return
+
 class TestBallCompComponents(unittest.TestCase):
 
 
@@ -97,10 +110,28 @@ class TestBallCompComponents(unittest.TestCase):
             assert len(q) == 0
         return
 
+    '''
+    tests for basic pairwisescores
+    '''
+    def test__Ball__intersection_(self):
+        b1,b2 = test_ball_pair_1()
+        b3 = sample_ball_3()
+        b4 = sample_ball_4()
 
+        h(b1,b2)
+        a = Ball.area_intersection_estimation(b1,b2)
+        assert (a > 0), "incorrect intersection for balls 1,2"
+        h(b1,b3)
+        h(b2,b3)
 
+        a = Ball.area_intersection_estimation(b2,b3)
+        assert (a - b3.area()) < 10 ** -5, "incorrect intersection for balls 2,3"
 
+        h(b2,b2)
+        a = Ball.area_intersection_estimation(b2,b2)
+        assert (a - b2.area()) < 10 ** -5, "incorrect intersection for balls 2,3"
 
+        h(b3,b4)
 
 ######## end: class<SetMerger> tests ############
 
@@ -109,48 +140,11 @@ class TestBallCompComponents(unittest.TestCase):
 def test__Ball__intersection2():
     b3,b4 = sample_ball_3(),sample_ball_4()
     q = Ball.does_intersect(b3,b4)
-    assert
     print("int? ",q)
 
     ai = Ball.area_intersection_estimation(b3,b4)
     print("ai? ",ai)
     return -1
-
-def h(b1,b2):
-    print("**")
-    b12 = Ball.area_intersection_estimation_(b1,b2)
-    b21 = Ball.area_intersection_estimation_(b2,b1)
-    bae = Ball.area_intersection_estimation(b1,b2)
-
-    print("\tarea estimation")
-    print("b1->2: ",b12)
-    print("b2->1: ",b21)
-    print("est. area: ",bae)
-    print("**")
-    return
-
-'''
-tests for basic pairwisescores
-'''
-def test__Ball__intersection_():
-    b1,b2 = test_ball_pair_1()
-    b3 = sample_ball_3()
-    b4 = sample_ball_4()
-
-    h(b1,b2)
-    a = Ball.area_intersection_estimation(b1,b2)
-    assert (a > 0), "incorrect intersection for balls 1,2"
-    h(b1,b3)
-    h(b2,b3)
-
-    a = Ball.area_intersection_estimation(b2,b3)
-    assert (a - b3.area()) < 10 ** -5, "incorrect intersection for balls 2,3"
-
-    h(b2,b2)
-    a = Ball.area_intersection_estimation(b2,b2)
-    assert (a - b2.area()) < 10 ** -5, "incorrect intersection for balls 2,3"
-
-    h(b3,b4)
 
 def test__Ball__intersection2_():
     b3 = sample_ball_3()

@@ -117,9 +117,21 @@ class MessageStreamer:
                 c += 1
         return
 
+    def stream(self):
+
+        if type(self.openedFile) == type(None):
+            return False
+        self.stream_block()
+
+        if len(self.blockData) == 0:
+            self.end_stream()
+        return True
+
+
+
     def end_stream(self):
         self.openedFile.close()
-        self.openedFile = None 
+        self.openedFile = None
 
 class MessageAlphabet:
 
