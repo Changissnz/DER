@@ -2,7 +2,7 @@ from numerical_space_data_generator import *
 
 """
 """
-def sample_nsdi_1(q, filePath = "tests/s.txt"):
+def sample_nsdi_1(q, filePath = "tests/s.txt", nr = None):
     if type(q) == str:
         assert q in ['relevance zoom', 'prg']
     else:
@@ -22,7 +22,7 @@ def sample_nsdi_1(q, filePath = "tests/s.txt"):
     sp = np.copy(bounds[:,1])
     modeia = 'w'
 
-    q = NSDataInstructions(bInf, rm, sp, filePath,modeia)
+    q = NSDataInstructions(bInf, rm, sp, filePath,modeia,nr)
     return q
 
 '''
@@ -60,4 +60,16 @@ def test__sample_nsdi_13():
         q.next_batch_()
     assert q.c == 3, "incorrect number of batches"
 
+    q.batch_summary()
+
+def test__sample_nsdi_14():
+    nr = np.array([[0.01,0.07]])
+    q = sample_nsdi_1('relevance zoom',"tests/sneaht.txt",nr)
+    q.make_rssi()
+
+    c = 0
+    while q.fp and c < 100:
+        q.next_batch_()
+        c += 1
+    print("# batches: ",c)
     q.batch_summary()

@@ -41,4 +41,10 @@ some point-set cases.
     - type(rm[0]) is np.ndarray
 
 11/13/21
-- work from yesterday is no longer required. 
+- work from yesterday is no longer required.
+
+11/14/21
+- all plans for NLP have been removed; "French Idioms and Proverbs" from project is no longer needed.
+
+11/18/21
+- working on `noise capabilities` for `class<NSDataInstructions>`.

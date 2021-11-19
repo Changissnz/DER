@@ -322,33 +322,6 @@ class SkewedSearchSpaceIterator(SearchSpaceIterator):
 
     # TODO: test this
     @staticmethod
-    def n_partition(parentBounds,bounds,n, noiseRange = None):
-        s = split_improper_bound(parentBounds,bounds,checkPoints = True)
-        d2,d1 = s[1][:,1] - s[0][:,1], s[1][:,0] - s[0][:,0]
-        dx = d1 + d2
-        h_ = fh(h)
-        dxi = dx / h_
-
-        start = parentBounds[:,0]
-
-        # mock a delaani
-        sssi = SkewedSearchSpaceIterator(bounds, parentBounds,start,columnOrder = None,SSIHop = n,cycleOn = False,cycleIs = 0)
-        r = [start]
-        for i in range(1,n + 1):
-            q = start + (dxi * i)
-            r.append(q)
-
-        r = np.array(r)
-
-        if type(noiseRange) != type(None):
-            r = add_noise_to_points_restricted_bounds(start,start + dx, r, noiseRange)
-
-        for (i,r_) in enumerate(r):
-            r[i] = sssi.round_value(r_)
-        return r
-
-    # TODO: test this
-    @staticmethod
     def k_random_points_in_bounds(parentBounds,bounds,k):
         start = parentBounds[:,0]
 
@@ -429,6 +402,7 @@ class SkewedSearchSpaceIterator(SearchSpaceIterator):
     def reached_end(self):
         q = equal_iterables(self.ref2,self.e2, 4)
         return q
+
     """
     sets value v as reference point
 

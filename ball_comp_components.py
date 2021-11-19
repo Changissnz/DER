@@ -1,5 +1,5 @@
 from numerical_generator import *
-from point_weight_function import * 
+from point_weight_function import *
 from collections import Counter
 
 '''
@@ -15,7 +15,6 @@ class SetMerger:
     '''
     def __init__(self, sv):
         self.sv = sv
-        self.iterationMem = []
         self.newSets = []
 
     def save_new_sets(self):
@@ -125,15 +124,10 @@ class SetMerger:
         return possibleMerges
 
     def merge_by_implication(self):
-        l = len(self.sv)
-        if l == 0: return
-
-        ## TODO: or delete?
-        '''
-        # calculate endpoint
-        e = l -
-        '''
         m = []
+        l = len(self.sv)
+        if l == 0: return m
+
         for i in range(l):
             m_ = self.merges_at_index(i)
             m.extend(m_)
@@ -145,6 +139,8 @@ ball_area = lambda r,k: math.pi * float(r) **  k
 '''
 class Ball:
 
+    DELTA_MEMORY_CAPACITY = 3
+
     def __init__(self, center):
         assert is_vector(center), "invalid center point for Ball"
         self.center = center
@@ -152,6 +148,9 @@ class Ball:
         self.data = PointSorter(self.data)
         self.radius = 0.0
         self.radialRef = None
+        self.radiusDelta = (None,None)
+        self.radiusDeltas = []
+        self.pointAddDeltas = []
 
         # container that holds the most recent delta
         self.clear_delta() # (point,radius delta)
@@ -198,26 +197,40 @@ class Ball:
     and updates mean
     '''
     def add_element(self, p):
-        ##self.data = np.vstack((self.data,p))
         self.data.insert_point(p)
+        self.pointAddDeltas.insert(0,p)
+        self.pointAddDeltas = self.pointAddDeltas[:Ball.DELTA_MEMORY_CAPACITY]
 
         # update radius
         r = euclidean_point_distance(self.center,p)
-
         if r > self.radius:
             self.radialRef = np.copy(p)
-            self.radius = r
+            self.radiusDeltas.insert(0,self.radiusDelta)
+            self.radiusDeltas = self.radiusDeltas[:Ball.DELTA_MEMORY_CAPACITY]
             self.radiusDelta = (p, r - self.radius)
+            self.radius = r
+
+    def revert_add_point(self):
+        if len(self.pointAddDeltas) == 0: return
+        q = self.pointAddDeltas.pop(0)
+
+        # remove from data
+        if type(self.radiusDelta[0]) != type(None):
+            if equal_iterables(q,self.radiusDelta[0]):
+                self.revert_delta()
+        else:
+            self.data.delete_point(q)
+        return
 
     # TODO:
     '''
     '''
     def revert_delta(self):
-        if None in self.radiusDelta:
+        if type(self.radiusDelta[0]) == type(None):
             return
-
         self.data.delete_point(self.radiusDelta[0])
         self.radius = self.radius - self.radiusDelta[1]
+        self.radiusDelta = self.radiusDeltas.pop(0)
         return
 
     def clear_delta(self):

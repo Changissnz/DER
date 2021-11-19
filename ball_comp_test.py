@@ -15,11 +15,6 @@ def t1():
     while ms.stream():
         print("wuncenshos")
 
-###----------------------------
-def kpointgenerator():
-    return -1
-###----------------------------
-
 def test__BallComp__1():
     # test data from here
     ms = sample_ballcomp_data_1()

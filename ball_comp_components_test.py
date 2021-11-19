@@ -130,8 +130,34 @@ class TestBallCompComponents(unittest.TestCase):
         h(b2,b2)
         a = Ball.area_intersection_estimation(b2,b2)
         assert (a - b2.area()) < 10 ** -5, "incorrect intersection for balls 2,3"
-
         h(b3,b4)
+
+    def test__Ball__add_element(self):
+        c = np.array([0,0,0,0,0])
+        b = Ball(c)
+
+        # add these three points
+        p1 = np.array([10,5.0,0.0,1.0,3.0])
+        p2 = np.array([0,15.0,1.0,2.0,8.0])
+        p3 = np.array([1.0,2.0,3.0,4.0,5.0])
+
+        # calculate euclidean distance for each
+        ## 11.61895003862225 17.146428199482248 7.416198487095663
+        #ed1 = round(euclidean_point_distance(c,p1),5)
+        ed1 = euclidean_point_distance(c,p1)
+        ed2 = euclidean_point_distance(c,p2)
+        ed3 = euclidean_point_distance(c,p3)
+
+        b.add_element(p1)
+        assert ed1 == b.radius, "incorrect @ p1, {}|{}".format(ed1,b.radius)
+
+        b.add_element(p2)
+        assert max([ed1,ed2]) == b.radius, "incorrect @ p2"
+
+        b.add_element(p3)
+        assert max([ed1,ed2,ed3]) == b.radius, "incorrect @ p3"
+
+        return
 
 ######## end: class<SetMerger> tests ############
 
@@ -161,6 +187,34 @@ def test__Ball__intersection2_():
 
     h(b3,b7)
     return
+
+def test__Ball__add_element__radius_delta():
+    c = np.array([0,0,0,0,0])
+    b = Ball(c)
+
+    # add these three points
+    p1 = np.array([10,5.0,0.0,1.0,3.0])
+    p2 = np.array([0,15.0,1.0,2.0,8.0])
+    p3 = np.array([1.0,2.0,3.0,4.0,5.0])
+
+    # calculate euclidean distance for each
+    ## 11.61895003862225 17.146428199482248 7.416198487095663
+    #ed1 = round(euclidean_point_distance(c,p1),5)
+    ed1 = euclidean_point_distance(c,p1)
+    ed2 = euclidean_point_distance(c,p2)
+    ed3 = euclidean_point_distance(c,p3)
+
+    b.add_element(p1)
+    ##assert ed1 == b.radius, "incorrect @ p1, {}|{}".format(ed1,b.radius)
+    print("rd: ", b.radiusDelta)
+
+    b.add_element(p2)
+    ##assert max([ed1,ed2]) == b.radius, "incorrect @ p2"
+    print("rd: ", b.radiusDelta)
+
+    b.add_element(p3)
+    ##assert max([ed1,ed2,ed3]) == b.radius, "incorrect @ p3"
+    print("rd: ", b.radiusDelta)
 
 ######## end: class<Ball> tests ############
 

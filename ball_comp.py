@@ -79,12 +79,13 @@ class BallComp:
     def add_point(self, p):
 
         # case: make new ball, maxBalls not filled yet
-        if len(self.balls) < self.ma                  xBalls:
+        if len(self.balls) < self.maxBalls:
             b = self.new_ball(p)
             self.balls.append(b)
             return
         #
-        print("NULL")
+        else:
+            self.move_it(p)
         return
 
     ####################### START: ball neighbor methods #####
@@ -134,6 +135,9 @@ class BallComp:
 
     def move_it(self,p):
         d = self.new_point_decision(p)
+
+        print("D ",d)
+
         self.conduct_decision(p,d)
         return
 
@@ -234,7 +238,7 @@ class BallComp:
             # add point to ball
         b = self.balls[l]
         b_ = deepcopy(b)
-        b.add_point(p)
+        b.add_element(p)
 
             # determine neighbors of ball before adding point
         n0 = set(b.neighbors)
@@ -277,6 +281,9 @@ class BallComp:
 
     '''
     calculates a score to make new ball for point
+
+    return:
+    - float
     '''
     def decision_2_score(self,p):
 
@@ -308,50 +315,6 @@ class BallComp:
 
     ####################### END: decision scores #####
 
-    '''
-    function logs the changes that will occur
-    after the addition of p.
-    - dict<ball index -> radiusDelta>
-    - set<ball int>: indices for balls to be merged.
-
-    return:
-    -
-    '''
-    ###
-    """
-    def log_add_point_delta(self, p):
-
-        # perform score for adding p to
-        # old ball versus new ball
-        oldBallScore =
-        newBallScore =
-
-        # new score
-        '''
-            # make new ball for p
-
-            # determine neighbors of ball
-
-            # determine area delta from mod, oldBs := {neighbors}, newBs := {neighbors + ball(p)}
-
-            # apply variables `at`,`ap`,`au` for score
-        '''
-        b =
-        return -1
-    """
-    ####
-
-
-    '''
-    determines the balls that intersect b after delta
-    '''
-    ###
-    """
-    def ball_intersections_from_ball_delta(self,b):
-        return -1
-    """
-    ###
-
     def update_ball_info(self):
 
         # case: initial
@@ -362,18 +325,6 @@ class BallComp:
         # case: update
         else:
             return -1
-        return -1
-
-    '''
-    updates `at` and `au`
-    '''
-    def update_ball_info_cache(self):
-
-        for b in self.balls:
-            return -1
-            ##q1 = b.radiusDelta[]
-
-
         return -1
 
     '''
@@ -408,9 +359,6 @@ class BallComp:
                 ls.append(i)
         return ls
 
-    def new_point_decision(self,p):
-
-        return -1
 
 
     """

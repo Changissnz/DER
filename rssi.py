@@ -32,15 +32,11 @@ the original bounds:
                     each point
 (2) prg: pseudo-random generator
 """
-
 class ResplattingSearchSpaceIterator:
 
     def __init__(self,bounds, startPoint, columnOrder = None, SSIHop = 7, resplattingMode = ("relevance zoom",None), additionalUpdateArgs = ()):
         assert is_proper_bounds_vector(bounds), "bounds "
         assert is_vector(startPoint), "invalid start point"
-
-        ## TODO: delete
-        #assert resplattingMode[0] in {"relevance zoom", "relevance zoom noise", "prg"}
         assert resplattingMode[0] in {"relevance zoom", "prg"}
         assert type(resplattingMode[1]) == RChainHead, "invalid argument for resplatting mode"
 
@@ -93,23 +89,14 @@ class ResplattingSearchSpaceIterator:
     instance for the given bounds
     '''
     def declare_new_ssi(self,bounds, startPoint):
-        ##
-        """
-        print("[d]eclaring new ssi w/ bounds")
-        print(bounds)
-        print("##$#")
-        """
-        ##
 
         # if no specified order, default is descending
         if type(self.columnOrder) == type(None):
             self.columnOrder =ResplattingSearchSpaceIterator.column_order(bounds.shape[0],"descending")
 
         if is_proper_bounds_vector(bounds):
-            ##print("making reg")
             self.ssi = SearchSpaceIterator(bounds, startPoint, self.columnOrder, self.SSIHop,cycleOn = True)
         else: # make SkewedSearchSpaceIterator
-            ##print("making skew")
             self.ssi = SkewedSearchSpaceIterator(bounds,self.bounds,startPoint,self.columnOrder,self.SSIHop,cycleOn = True)
 
     # CAUTION: only rm[0] == `relevance zoom` has rch update
@@ -127,7 +114,6 @@ class ResplattingSearchSpaceIterator:
             return False
 
         if self.rm[0] == "relevance zoom":
-            ##print("X declaring new")
 
             # draw from cache
             if type(nbs) == type(None):
@@ -141,10 +127,7 @@ class ResplattingSearchSpaceIterator:
             if self.check_duplicate_range(nb):
                 return True
 
-            ##print("declaring new ssi")
             self.declare_new_ssi(nb,sp)
-            ##print("after")
-
             # log point into range history
             self.rangeHistory.append(nb)
 
@@ -174,9 +157,8 @@ class ResplattingSearchSpaceIterator:
                  self.ri.rzoom.activationRange = np.vstack((self.ri.rzoom.activationRange,\
                     self.ri.rzoom.activationRange)).T
             self.ri.rzoom.activationRanges.append(self.ri.rzoom.activationRange)
-        ##print("\tLR")
-        self.load_activation_ranges()
 
+        self.load_activation_ranges()
         # make the next rzoom
         nb = next(self.ri)
 
@@ -196,8 +178,6 @@ class ResplattingSearchSpaceIterator:
     ###
     def load_activation_ranges(self):
 
-        # TODO: verbose
-        ##print("loading activation ranges ", len(self.ri.rzoom.activationRanges))
         additions = []
         while len(self.ri.rzoom.activationRanges) > 0:
             # pop the activation range
@@ -205,13 +185,8 @@ class ResplattingSearchSpaceIterator:
 
             # case: 0-size, modify activation range
             if equal_iterables(ar[:,0],ar[:,1]):
-                ##print("FIXING ")
-                ##print(ar)
                 ar = self.fix_zero_size_activation_range(ar)
-                ##print("\t**")
-                ##print(ar)
             self.ri.rzoomBoundsCache.append(ar)
-
 
     """
     new activation range is
@@ -229,17 +204,14 @@ class ResplattingSearchSpaceIterator:
         self.ssi.rev__next__()
         e2 = self.ssi.rev__next__()
         e3 = np.array([e1,e2]).T
-        
+
         rv = np.ones((e3.shape[0],)) / 2.0
         p = point_on_improper_bounds_by_ratio_vector(\
             self.bounds,e3,rv)
 
         e3[:,1] = p
-
         self.ssi.set_value(q)
-
         return e3
-
 
     @staticmethod
     def column_order(k,mode = "random"):
@@ -308,7 +280,6 @@ class ResplattingSearchSpaceIterator:
         #### do range history
         print("range history")
         self.display_range_history()
-
         #### do
 
 def rssi__display_n_bounds(rssi, n):

@@ -2,6 +2,20 @@ from rssi import *
 
 DEFAULT_SINGLE_WRITE_SIZE = 2000
 
+"""
+version of `one_random_noise` that can do proper
+and improper bounds
+"""
+def one_random_noise_(parentBounds,bounds, noiseRange):
+
+    if not is_proper_bounds_vector(bounds):
+        pd = point_difference_of_improper_bounds(parentBounds,bounds)
+        s1 = np.zeros((parentBounds.shape[0],))
+        bx = np.array([s1,pd]).T
+    else:
+        bx = bounds
+    return one_random_noise(bx,noiseRange)
+
 '''
 generates data into file
 '''
@@ -12,13 +26,14 @@ class NSDataInstructions:
     rm := (mode := `relevance zoom` | `prg` | sequence::(relevant points), RCH)
     sp := # of resplat bounds | # of resplat samples
     '''
-    def __init__(self, bInf, rm, sp, filePath,modeia):
+    def __init__(self, bInf, rm, sp, filePath,modeia,noiseRange = None):
         self.bInf = bInf
         self.rm = rm
         self.sp = sp
         self.filePath = filePath
         self.fp = None
         self.load_filepath(modeia)
+        self.nr = noiseRange
         self.c = 0
         self.terminated = False
         self.bs = []
@@ -47,7 +62,6 @@ class NSDataInstructions:
     def make_rssi(self):
         # mock a delaani
         if type(self.rm[0]) != str:
-            ##assert is_2dmatrix(self.rm[0]), "invalid matrix, got {}".format(self.rm[0])
             delaani = ("relevance zoom",self.rm[1])
         else:
             delaani = self.rm
@@ -76,20 +90,7 @@ class NSDataInstructions:
 
             # start point is left
             DEFAULT_START_POINT = np.copy(q[:,0])
-
-            """
-                ###
-            print("setting new bounds")
-            print(q)
-            print(DEFAULT_START_POINT)
-            print("-------------------")
-                ###
-            """
-            
             self.rssi.update_resplatting_instructor((q,DEFAULT_START_POINT))
-                ##self.rssi.ssi.set_value(DEFAULT_START_POINT)
-            #self.rssi = ResplattingSearchSpaceIterator(q, DEFAULT_START_POINT,\
-            #        self.bInf[2],self.bInf[3],delaani)
 
         if self.rssi.terminated:
             return None
@@ -108,6 +109,31 @@ class NSDataInstructions:
                 qc += 1
         return q
 
+    '''
+    '''
+    def add_noise_to_point(self,p):
+
+        h = one_random_noise_(self.rssi.bounds,\
+                self.rssi.ssi.de_bounds(),\
+                self.nr)
+
+        if type(self.rssi.ssi) is SkewedSearchSpaceIterator:
+            p_ = self.rssi.ssi.inverse_round_value(p)
+            p_ = vector_hop_in_bounds(p_,h,self.rssi.ssi.iBounds)
+            return self.rssi.ssi.round_value(p_)
+        else:
+            return vector_hop_in_bounds(p,h,self.rssi.ssi.de_bounds())
+
+    # TODO: untested
+    def add_noise_to_batch(self,b):
+        print("adding noise to batch")
+        if type(self.nr) == type(None):
+            print("here")
+            return b
+
+        for p in b:
+            yield self.add_noise_to_point(p)
+
     def next_batch_(self):
         self.c += 1
         if type(self.fp) == type(None):
@@ -119,6 +145,17 @@ class NSDataInstructions:
                 b = np.copy(self.rssi.ssi.bounds)
             else:
                 b = np.copy(self.rssi.bounds)
+
+            ##
+            # check for adding noise
+            if type(self.nr) != type(None):
+                q2 = []
+                for q_ in q:
+                    q3 = self.add_noise_to_point(q_)
+                    ##print("prev\n\t{}\nnoise\n\t{}".format(q_,q3))
+                    q2.append(q3)
+                q = q2
+            #q = self.add_noise_to_batch(q)
 
             q = [vector_to_string(q_,cr) + "\n" for q_ in q]
             self.fp.writelines(q)

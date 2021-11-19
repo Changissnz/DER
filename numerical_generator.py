@@ -136,47 +136,8 @@ class CycleMap:
 
 DELTA_ADD = lambda x,c: x + c
 DELTA_MULT = lambda x,c: x * c
-
 # TODO: future
 DELTA_POLY = lambda x, poly: 1
-
-'''
-generates float delta by
-'''
-class FloatDeltaGenerator:
-
-    def __init__(self, startVal, f, mox, tVal = None, cycleOn = False):
-        self.startVal = startVal
-        self.value = startVal
-        self.f = f
-        self.mox = mox
-        print("setting t val", tVal)
-        self.tVal = tVal
-        self.cycleOn = cycleOn
-
-    # TODO:
-    def pass_termination(self, v):
-        return -1
-
-    def __next__(self):
-        # TODO: future
-        # make comparator instead of equals
-        if self.tVal != None and self.cycleOn:
-            if abs(self.value - self.tVal) < 5 * 10 ** -4:
-                return self.tVal
-
-        v = self.value
-        self.value = round(self.f(v, self.mox),5)
-
-        # TODO: bug, will not work for decreasing values
-        """
-        if self.tVal != None:
-            if self.value > self.tVal:
-                print("V ", self.value, "\tT", self.tVal)
-                q = self.startVal + (self.value % self.tVal)
-                self.value = q
-        """
-        return v
 
 '''
 - rangesGanges: 2-tuple
@@ -195,20 +156,11 @@ def FloatDeltaGenerator_pattern1(rangesGanges, divider):
         directororios = 1 if rangesGanges[1] > rangesGanges[0] else -1
         lengthonLengthon = dividingLengthon * directororios
         divider = lengthonLengthon
-        ##print("divider ", divider)
     return FloatDeltaGenerator(rangesGanges[0], DELTA_ADD, divider, rangesGanges[1])
 
-### used for testing
-'''
-x = LCG(3, 255)
-'''
 #------------------------------------------------------------------
-
-'''
 #### binary sequence generators
-'''
 
-# TODO: future, refactor into class<BinarySeq>
 def generate_possible_binary_sequences(vecOrder, thisNumber):
 
     if len(thisNumber) == vecOrder:
@@ -230,7 +182,6 @@ def generate_random_binary_sequence(vecOrder):
 """
 """
 def generate_uniform_sequence_in_bounds(vecOrder, bounds):
-
     assert is_2dmatrix(bounds), "invalid bounds {}".format(bounds)
     assert vecOrder == len(bounds) or len(bounds) == 1, "invalid bounds"
 
@@ -260,7 +211,6 @@ def choose_random_bounds(minVec,maxVec):
     minVec = minVec.reshape((len(minVec),1))
     maxVec = maxVec.reshape((len(maxVec),1))
     q = np.hstack((minVec,maxVec))
-
     return q[list(range(len(minVec))),bs]
 
 ################################# TODO: noise methods need to be checked.
@@ -276,20 +226,13 @@ def k_random_points_in_bounds(minVec,maxVec,k):
         x = random.random()
         yield minVec + (d * x)
 
-
-
-# TODO: redo, over-complicated
-'''
-- description:
-  * select random
-'''
 ###------------------------
 
 """
 noiseRange := 2dmatrix, len is 1 or len(point)
 """
 def one_random_noise(bounds,noiseRange):
-    assert is_bounds_vector(bounds), "invalid bounds"
+    assert is_proper_bounds_vector(bounds), "invalid bounds"
 
     # set max distance for each dim.
     q = bounds[:,1] - bounds[:,0]
@@ -297,7 +240,6 @@ def one_random_noise(bounds,noiseRange):
     q = q * us
     return q
 
-# TODO: relocated to another file, delete
 '''
 adds noise to points in restricted bounds by noise range,
 set to (0.25,0.65)
@@ -307,10 +249,9 @@ and maxVec
 
 minVec,maxVec := vectors that do not need to be sorted
 '''
-def add_noise_to_points_restricted_bounds(minVec,maxVec, points, noiseRange = np.array([[0.25,0.65]])):
+def add_noise_to_points_restricted_bounds(minVec,maxVec, points, noiseRange = np.array([[0.25,0.65]]), boundsRestriction = False):
 
     b = np.array([minVec,maxVec]).T
-    #k = b.shape[0]
     for p in points:
         yield p + one_random_noise(b,noiseRange)
 
@@ -325,11 +266,3 @@ def random_noise_sequence(s,b,noiseRange):
 def generate_gaussian_sequence_in_bounds(mean, var):
     rng.normal()
     return -1
-
-class NoiseAdder:
-
-    def __init__(self, bounds, noiseRange):
-        return
-
-    def add_noise(referencePoint, inBoundsRestriction = False):
-        return -1
