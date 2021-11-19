@@ -14,7 +14,6 @@ class MessageStreamer:
 
     acceptableFileExtensionForText = [".txt"]
     acceptableFileExtensionForImage = [".jpg"]
-    ##acceptableEncodings = ["ascii", "iso8859_10", "iso8859_15", "utf_8"]
     acceptableEncodings = ["ascii", "utf_8","utf-8"]
 
     """
@@ -51,7 +50,6 @@ class MessageStreamer:
         if self.mav == "pic":
             self.openedFile = Image.open(str(self.filePath))
             self.loadedPic = self.openedFile.load() # CAUTION: loads entire image into memory
-            ## "IMG_20210322_000404601.jpg"
             self.streamIndex = (0,0)
         else:
             self.check_valid_text_file_encoding()
@@ -126,8 +124,6 @@ class MessageStreamer:
         if len(self.blockData) == 0:
             self.end_stream()
         return True
-
-
 
     def end_stream(self):
         self.openedFile.close()

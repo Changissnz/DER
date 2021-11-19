@@ -4,11 +4,10 @@ import unittest
 
 class TestMessageStreamerClass(unittest.TestCase):
 
-
     def test_MessageStreamer__open_file(self):
         fp = "indep/text1.txt"
-        fp2 = "indep/2e321b-300__EasternPoisonOak.jpg"
-        fp3 = "indep/FrenchIdiomsAndProverbs__48130-0.txt"
+        fp2 = "indep/tree_bark_1.jpg"
+        fp3 = "indep/text2.txt"
 
         try:
             q = message_streamer.MessageStreamer(fp)
@@ -34,14 +33,10 @@ class TestMessageStreamerClass(unittest.TestCase):
         print("\n\t**DISPLAY::stream_block__text")
         for l in q.blockData:
             print(l)
-        '''
-        for l in q.blockData:
-            print("BYTE ", l, " STR ", str(l))
-        '''
         q.end_stream()
 
     def test_MessageStreamer__stream_block__jpg(self):
-        fp = "indep/2e321b-300__EasternPoisonOak.jpg"
+        fp = "indep/tree_bark_2.jpg"
         q = message_streamer.MessageStreamer(fp)
         q.stream_block()
         assert len(q.blockData) == message_streamer.DEFAULT_STREAM_BLOCK_SIZE, "invalid block data size, got {}".format(len(q.blockData))
