@@ -103,6 +103,8 @@ class SetMerger:
         # iterate through the sets and if s == 1,
         # determines which index in possibleMerges to add to
         for j in range(i + 1, l):
+                    ##print("\t\t##")
+                    ##print(ref,self.sv[j])
             s = SetMerger.set_difference_score(ref,self.sv[j])
             if s != d: continue
 
@@ -133,7 +135,12 @@ class SetMerger:
             m.extend(m_)
         return m
 
-ball_area = lambda r,k: math.pi * float(r) **  k
+# CAUTION: not fully tested
+def ball_area(r,k):
+    assert k >= 2,"invalid k"
+    x = math.pi * float(r) ** 2
+    x2 = (k - 1) ** 2
+    return x * x2
 
 '''
 '''
@@ -144,10 +151,8 @@ class Ball:
     def __init__(self, center):
         assert is_vector(center), "invalid center point for Ball"
         self.center = center
-        self.data = np.empty((0,self.center.shape[0]))
-        self.data = PointSorter(self.data)
+        self.data = PointSorter(np.empty((0,self.center.shape[0])))
         self.radius = 0.0
-        self.radialRef = None
         self.radiusDelta = (None,None)
         self.radiusDeltas = []
         self.pointAddDeltas = []
@@ -163,7 +168,6 @@ class Ball:
     def dataless_copy(b):
         b_ = Ball(np.copy(b.center))
         b_.radius = b.radius
-        b_.radialRef = np.copy(b.center)
         b_.neighbors = set(b.neighbors)
         return b_
 
@@ -204,7 +208,6 @@ class Ball:
         # update radius
         r = euclidean_point_distance(self.center,p)
         if r > self.radius:
-            self.radialRef = np.copy(p)
             self.radiusDeltas.insert(0,self.radiusDelta)
             self.radiusDeltas = self.radiusDeltas[:Ball.DELTA_MEMORY_CAPACITY]
             self.radiusDelta = (p, r - self.radius)
@@ -214,6 +217,17 @@ class Ball:
         if len(self.pointAddDeltas) == 0: return
         q = self.pointAddDeltas.pop(0)
 
+                ##
+        """
+        print("## REVERT ADD POINT")
+        print(q)
+        print("\t##")
+        print(self.radiusDelta)
+        print("\t##")
+        print(self.radiusDeltas)
+        """
+                ##
+                
         # remove from data
         if type(self.radiusDelta[0]) != type(None):
             if equal_iterables(q,self.radiusDelta[0]):
@@ -230,7 +244,10 @@ class Ball:
             return
         self.data.delete_point(self.radiusDelta[0])
         self.radius = self.radius - self.radiusDelta[1]
-        self.radiusDelta = self.radiusDeltas.pop(0)
+
+        self.radiusDelta = self.radiusDeltas.pop(0) if len(self.radiusDeltas) > 0\
+                        else (None,None)
+
         return
 
     def clear_delta(self):
@@ -292,42 +309,25 @@ class Ball:
         return av
 
     '''
-    * note: for use w/ k-dim.
-    '''
-    @staticmethod
-    def radial_endpoint_for_point(m,p,r,dir):
-        rd = Ball.radial_delta_for_point(m,p,r,dir)
-        return m + rd
-
-    @staticmethod
-    def radial_delta_for_point(m,p,r,dir):
-        assert is_vector(m), "invalid slope"
-        assert m.shape[0] == p.shape[0], "slope and point not same shape"
-        assert type(r) is float, "invalid type for r"
-        assert dir in [1,-1], "invalid dir"
-
-        # get distance of point p
-        z = np.zeros((m.shape[0],))
-        return float(dir) * r / euclidean_point_distance(m,z)
-
-    '''
     merges two balls
     '''
     def __add__(self, b2):
 
-        # get the radius of each
-        r1,r2 = self.radius,b2.radius
+        # calculate the difference
         diff = b2.center - self.center
-        d1 = Ball.radial_endpoint_for_point(diff, self.center, r1,-1)
-        d2 = Ball.radial_endpoint_for_point(diff, b2.center, r2,1)
+        c = self.center + diff / 2.0
 
-        # calculate midpoint
-        m1 = (d1 + d2) / 2.0
+        # calculate radius of new ball
+        rx = np.array([self.radius,b2.radius])
+        mi = np.argmax(rx)
+        b = self.center if mi == 1 else b2.center
+        d = euclidean_point_distance(b,c)
+        d = d + rx[mi]
 
-        #
-        b3 = Ball(m1)
-
-        # push all points
-        dr = np.vstack((self.data,b2.data))
-        b3.data = dr
+        # instantiate new ball
+        b3 = Ball(c)
+            # fix new ball's variables
+        b3.radius = d
+        dr = np.vstack((self.data.data,b2.data.data))
+        b3.data = PointSorter(dr)
         return b3

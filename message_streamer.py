@@ -29,12 +29,7 @@ class MessageStreamer:
         self.open_file()
         assert streamBlockSize >= STREAM_BLOCK_SIZE_RANGE[0] and streamBlockSize <= STREAM_BLOCK_SIZE_RANGE[1], "stream block size inaccurate"
         self.streamBlockSize = streamBlockSize
-
         self.blockData = []
-
-    @staticmethod
-    def byte_sequence_converter(b):
-        return -1
 
     def file_to_msg_alphabet(self):
         if self.filePath.suffix in MessageStreamer.acceptableFileExtensionForImage:
@@ -123,9 +118,12 @@ class MessageStreamer:
 
         if len(self.blockData) == 0:
             self.end_stream()
+            return False
         return True
 
     def end_stream(self):
+        if type(self.openedFile) == type(None):
+            return 
         self.openedFile.close()
         self.openedFile = None
 

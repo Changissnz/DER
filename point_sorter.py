@@ -80,20 +80,11 @@ description:
 vector := sorted 1-d array
 """
 def sorted_vector_value_search(vector, value, irange = None):
+    s = np.where(vector == value)[0]
 
-    if type(irange) is type(None):
-        irange = [0, vector.shape[0] - 1]
-
-    if irange[0] > irange[1]: return None, False
-
-    if value >= vector[irange[0]] and value <= vector[irange[1]]:
-
-        if value == vector[irange[0]]: return irange[0],True
-        if value == vector[irange[1]]: return irange[1], True
-        irange = [irange[0] + 1, irange[1] - 1]
-        return sorted_vector_value_search(vector, value, irange)
-    else:
-        return None, False
+    if len(s) == 0:
+        return None,False
+    return s[0],True
 
 '''
 class can be used by one of these ways:

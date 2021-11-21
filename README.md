@@ -52,3 +52,6 @@ some point-set cases.
 11/19/21
 - Removed `indep/2e321b-300__EasternPoisonOak.jpg`,
   `indep/3492d6-300__WesternPoisonIvy.jpg`, and `indep/aa04b6-300__WesternPoisonOak.jpg` from project.
+
+11/21/21
+- time will be dedicated this week to completing `class<BallComp>`.

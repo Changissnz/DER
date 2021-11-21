@@ -653,7 +653,7 @@ def vector_to_string(v, castFunc = int):
 
 # TODO: untested
 def string_to_vector(s, castFunc = int):
-    assert castFunc in [float, float_func, int_func,cr], "invalid cast func"
+    assert castFunc in [float, float_func, int,cr], "invalid cast func"
 
     def next_item(s):
         indo = len(s)
@@ -803,26 +803,16 @@ def point_difference_of_improper_bounds(improperBounds,parentBounds):
         r = improperBounds[i]
         j = parentBounds[i]
 
-        # cassius: proper dim.
+        # proper dim.
         if r[0] < r[1]:
             d = r[1] - r[0]
-        # cassius: improper dim.
+        # improper dim.
         else:
             d = j[1] - r[0]
             d += (r[1] - j[0])
-
-        """
-        print("D")
-        print(d)
-        print("**")
-        """
         diff.append(d)
     return np.array(diff)
-    """
-    # get the first half
-    return (parentBounds[:,1] - improperBounds[:,0]) +\
-        (improperBounds[:,1] - parentBounds[:,0])
-    """
+
 
 # TODO: unused
 '''
@@ -832,23 +822,13 @@ def split_improper_bound(properBounds,improperBounds,checkPoints = True):
         assert point_in_bounds(properBounds,improperBounds[:,0]), "end0 of bounds not in proper bounds,\npoint {}\nbounds {}".format(improperBounds[:,0],properBounds)
         assert point_in_bounds(properBounds,improperBounds[:,1]), "end1 of bounds not in proper bounds"
 
-    # case: improperBounds actually proper
-    """
-    if is_proper_bounds_vector(improperBounds): return [improperBounds]
-
-    # first half
-    h1 = np.vstack((improperBounds[:,0],properBounds[:,1])).T
-    h2 = np.vstack((properBounds[:,0], improperBounds[:,1])).T
-    return [h1,h2]
-    """
-
     q1,q2 = [],[]
     for i in range(properBounds.shape[0]):
         r = improperBounds[i]
-        # cassius: proper dim.
+        # proper dim.
         if r[0] < r[1]:
             s1,s2 = np.copy(r),np.array([np.nan,np.nan])
-        # cassius: improper dim.
+        # improper dim.
         else:
             s1,s2 = np.array([r[0],properBounds[i,1]]), np.array([properBounds[i,0],r[1]])
         q1.append(s1)
@@ -867,7 +847,6 @@ def point_on_improper_bounds_by_ratio_vector(parentBounds,bounds,rv,roundDepth =
     p2 = np.copy(bounds[:,0])
 
     for (i,s_) in enumerate(s):
-
         d = pd1[i] - s_
 
         # if addition is greater than first half
@@ -914,6 +893,9 @@ def refit_point_for_new_bounds(p,oldBounds,newBounds):
     vr = vector_ratio(oldBounds,p)
     return point_on_bounds_by_ratio_vector(newBounds,vr)
 
-
+def area_of_bounds(bounds):
+    assert is_proper_bounds_vector(bounds), "not proper bounds vector"
+    pd = bounds[:,1] - bounds[:,0]
+    return np.product(pd)
 
 ######## end: some methods on bounds
