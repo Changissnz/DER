@@ -1,57 +1,38 @@
 from .contextia_de_lo_vego_de_la_vegas import ball_comp_components
 import numpy as np
 
-def sample_ball_1():
-    center = np.array([4,7,11,14])
-    points = np.array([[4.1,6.9,11.1,13.9]])
-    return ball_comp_components.Ball.one_ball(center,points)
+def sample_ball_pair_1():
+    c1 = np.array((10.0,10.0,10.0,10.0))
+    c2 = np.array((17.0,10.0,10.0,10.0))
+    r1 = 5.0
+    r2 = 4.0
+    b1 = ball_comp_components.Ball.one_ball_(c1,r1)
+    b2 = ball_comp_components.Ball.one_ball_(c2,r2)
+    return b1,b2
 
-'''
-intersections: 1,3
-'''
-def sample_ball_2():
-    center = np.array([10,10,10,10])
-    points = np.array([[18.1,10,10,10]])
-    return ball_comp_components.Ball.one_ball(center,points)
+def sample_ball_pair_2():
+    c1 = np.array((10.0,10.0,10.0,10.0))
+    c2 = np.array((10.0,8.0,10.0,10.0))
+    r1 = 5.0
+    r2 = 2.0
+    b1 = ball_comp_components.Ball.one_ball_(c1,r1)
+    b2 = ball_comp_components.Ball.one_ball_(c2,r2)
+    return b1,b2
 
-'''
-intersections: 2,4
-'''
-def sample_ball_3():
-    center = np.array([10,10,10,10])
-    points = np.array([[10,14.0,10,10]])
-    return ball_comp_components.Ball.one_ball(center,points)
+def sample_ball_pair_3():
+    c1 = np.array((10.0,10.0,10.0,10.0))
+    c2 = np.array((8.0,8.0,8.0,8.0))
+    r1 = 5.0
+    r2 = 2.0
+    b1 = ball_comp_components.Ball.one_ball_(c1,r1)
+    b2 = ball_comp_components.Ball.one_ball_(c2,r2)
+    return b1,b2
 
-'''
-intersections: 3
-'''
-def sample_ball_4():
-    center = np.array([10,20.0,10.0,10])
-    points = np.array([[10,12.0,10,10]])
-    return ball_comp_components.Ball.one_ball(center,points)
-
-'''
-intersections:
-'''
-def sample_ball_5():
-    center = np.array([10,12,10,10])
-    points = np.array([[10,16.0,10,10]])
-    return ball_comp_components.Ball.one_ball(center,points)
-
-'''
-'''
-def sample_ball_6():
-    center = np.array([10,8,10,10])
-    points = np.array([[10,12.0,10,10]])
-    return ball_comp_components.Ball.one_ball(center,points)
-
-def sample_ball_7():
-    center = np.array([10,18,10,10])
-    points = np.array([[8,18.0,10,10]])
-    return ball_comp_components.Ball.one_ball(center,points)
-
-'''
-used for intersection
-'''
-def test_ball_pair_1():
-    return sample_ball_1(),sample_ball_2()
+def sample_ball_pair_4():
+    c1 = np.array((10.0,10.0,10.0,10.0))
+    c2 = np.array((15.0,15.0,15.0,15.0))
+    r1 = 5.0
+    r2 = 2.0
+    b1 = ball_comp_components.Ball.one_ball_(c1,r1)
+    b2 = ball_comp_components.Ball.one_ball_(c2,r2)
+    return b1,b2

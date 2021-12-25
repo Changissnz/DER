@@ -53,7 +53,6 @@ class CenterResplat:
         self.centerBounds = centerBounds
         self.rch = rch
         self.noiseRange = noiseRange
-        ##self.radius = self.default_radius()
 
         # restrict cache to non-deletion
         self.relevantPointsCache = []
@@ -64,14 +63,6 @@ class CenterResplat:
     def output(self,p):
         if self.rch.apply(p):
             self.relevantPointsCache.append(p)
-
-    # TODO: add here.
-    '''
-    def default_radius(self):
-        d = euclidean_point_distance(self.centerBounds[:,1],self.centerBounds[:,0])
-        p = self.centers.shape[0] * 2
-        return d / float(p)
-    '''
 
     def __next__(self):
 
@@ -96,8 +87,6 @@ class CenterResplat:
 class provides resplatting instructions for ResplattingSearchSpaceIterator.
 
 If mode is "prg", then will output random point from CenterResplat.
-If this option is chosen
-
 '''
 class ResplattingInstructor:
 
@@ -113,9 +102,6 @@ class ResplattingInstructor:
     def output(self,p):
         assert self.check_args()
         if type(self.centerResplat) != type(None):
-            ##o = self.centerResplat.output(p)
-            ##if o:
-            ##    self.relevantPointsCache.append(p)
             self.centerResplat.output(p)
         else:
             self.rzoom.output(p)

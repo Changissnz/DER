@@ -673,8 +673,9 @@ def string_to_vector(s, castFunc = int):
 
 ######## start: some methods on bounds
 
-'''
+euclidean_point_distance = lambda p1, p2: np.sqrt(np.sum((p1 - p2)**2))
 
+'''
 '''
 def intersection_of_bounds(b1,b2):
     # check for each column
@@ -695,18 +696,20 @@ def intersection_of_bounds(b1,b2):
 '''
 b2 in b1?
 '''
-### TODO:
-'''
-def bounds_is_proper_subbounds(b1,b2):
-    x = intersection_of_bounds(b1,b2)
-    if type(x) is type(None):
-        return False
+def bounds_is_subbounds(b1,b2):
+    assert is_proper_bounds_vector(b1) and is_proper_bounds_vector(b2), "invalid args."
+    assert b1.shape[0] == b2.shape[0], "invalid args. 2"
 
-    return True if
-'''
+    def x(i):
+        return b2[i,0] >= b1[i,0] and b2[i,1] <= b1[i,1]
+    for i in range(b1.shape[0]):
+        if not x(i): return False
+    return True
 
 """
-boundRange :=
+Calculates a subbound of bound `b` w/ start equal to the start of `b`,
+
+boundRange := list({0,1})
 """
 def subbound_of_bound(b, boundRange):
     assert is_2dmatrix(b), "invalid type for bounds"
@@ -732,7 +735,6 @@ def n_partition_for_bound(b, partition):
         x0 = np.copy(x1)
         partition_.append(x0)
     return np.array(partition_)
-
 
 def invert_bounds(b):
     assert is_bounds_vector(b), "invalid bounds vector"
@@ -781,7 +783,11 @@ def point_in_bounds_(b,p):
     return point_in_bounds(b,p)
 
 def point_in_improper_bounds(parentBounds,bounds,p):
-    assert not is_proper_bounds_vector(bounds), "invalid bounds"
+
+    if is_proper_bounds_vector(bounds):
+        assert bounds_is_subbounds(parentBounds,bounds), "invalid parent bounds"
+        return point_in_bounds(bounds,p)
+
     ibs = split_improper_bound(parentBounds,bounds,checkPoints = True)
 
     rf = lambda f,i: (f >= ibs[0][i,0] and f <= ibs[0][i,1]) or\
@@ -797,6 +803,9 @@ point difference of improper bounds is a non-negative vector
 def point_difference_of_improper_bounds(improperBounds,parentBounds):
 
     assert improperBounds.shape == parentBounds.shape, "bounds must have equal shape"
+
+    if is_proper_bounds_vector(improperBounds):
+        return improperBounds[:,1] - improperBounds[:,0]
 
     diff = []
     for i in range(improperBounds.shape[0]):
@@ -840,7 +849,14 @@ def point_on_bounds_by_ratio_vector(b,rv):
     return b[:,0] + x
 
 def point_on_improper_bounds_by_ratio_vector(parentBounds,bounds,rv,roundDepth = 5):
+
+    if is_proper_bounds_vector(bounds):
+        return point_on_bounds_by_ratio_vector(bounds,rv)
+        ##raise ValueError("WRONG")
+
     ib = split_improper_bound(parentBounds,bounds,checkPoints = True)
+
+
     q = point_difference_of_improper_bounds(bounds,parentBounds)
     pd1 = ib[0][:,1] - ib[0][:,0] # point diff
     s = rv * q # point add

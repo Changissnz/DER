@@ -16,24 +16,31 @@ def one_random_noise_(parentBounds,bounds, noiseRange):
         bx = bounds
     return one_random_noise(bx,noiseRange)
 
+# TODO: arg<sp>
 '''
-generates data into file
+Generates data into file according to instructions given by arguments.
+
+If arg<noiseRange> != None, then add noise to each point value.
 '''
 class NSDataInstructions:
 
     '''
     bInf := (bounds, startPoint, columnOrder, SSIHop, additionalUpdateArgs)
     rm := (mode := `relevance zoom` | `prg` | sequence::(relevant points), RCH)
-    sp := # of resplat bounds | # of resplat samples
+    writeOutMode := literal to write out every point iterated
+                    relevant to write out only points deemed relevant by RCH
     '''
-    def __init__(self, bInf, rm, sp, filePath,modeia,noiseRange = None):
+    def __init__(self, bInf, rm,filePath,modeia,noiseRange = None,writeOutMode = "literal"):
         self.bInf = bInf
         self.rm = rm
-        self.sp = sp
         self.filePath = filePath
         self.fp = None
         self.load_filepath(modeia)
         self.nr = noiseRange
+        assert writeOutMode in {'literal','relevant'}
+        self.wom = writeOutMode
+        self.rchPrev = None # used for writeOutMode == 'relevant'
+
         self.c = 0
         self.terminated = False
         self.bs = []
@@ -71,7 +78,6 @@ class NSDataInstructions:
                 self.bInf[2],self.bInf[3],delaani,additionalUpdateArgs = self.bInf[4])
         return
 
-    # TODO: not tested
     def next_batch(self):
         # load next bound in self.rm[0]
         if type(self.rm[0]) != str:
@@ -79,6 +85,7 @@ class NSDataInstructions:
         else:
             delaani = self.rm
 
+        # update the instructor if not `relevance zoom` or `prg`
         if type(self.rm[0]) != str and self.c > 1:
             if len(self.rm[0]) == 0:
                 self.terminated = True
@@ -95,8 +102,14 @@ class NSDataInstructions:
         if self.rssi.terminated:
             return None
 
+        if self.wom == "relevant":
+            self.rchPrev = deepcopy(self.rm[1].apply)
+
+        # fetch the bound
         if delaani[0] == "relevance zoom":
-            q = ResplattingSearchSpaceIterator.iterate_one_bound(self.rssi)
+            #q = ResplattingSearchSpaceIterator.iterate_one_bound(self.rssi)
+            dsws = DEFAULT_SINGLE_WRITE_SIZE
+            q = ResplattingSearchSpaceIterator.iterate_one_batch(self.rssi,dsws)
         else: # prg
             q = []
             qc = 0
@@ -107,7 +120,20 @@ class NSDataInstructions:
                     break
                 q.append(nx)
                 qc += 1
+
+        # filter out by relevance function
+        if self.wom == "relevant":
+            q = self.relevance_filter(q)
+            ##print("LEN ", len(q))
         return q
+
+    def relevance_filter(self,q):
+        x = []
+        for q_ in q:
+            if self.rchPrev(q_):
+                x.append(q_)
+        self.rchPrev = None
+        return x
 
     '''
     '''
@@ -126,9 +152,8 @@ class NSDataInstructions:
 
     # TODO: untested
     def add_noise_to_batch(self,b):
-        print("adding noise to batch")
         if type(self.nr) == type(None):
-            print("here")
+            ##print("here")
             return b
 
         for p in b:
@@ -146,19 +171,23 @@ class NSDataInstructions:
             else:
                 b = np.copy(self.rssi.bounds)
 
-            ##
             # check for adding noise
             if type(self.nr) != type(None):
                 q2 = []
                 for q_ in q:
                     q3 = self.add_noise_to_point(q_)
-                    ##print("prev\n\t{}\nnoise\n\t{}".format(q_,q3))
                     q2.append(q3)
                 q = q2
-            #q = self.add_noise_to_batch(q)
 
+            ##print("BEFORE ")
+            ##print(q)
             q = [vector_to_string(q_,cr) + "\n" for q_ in q]
+            ##print("AFTER")
+            ##print(q)
+
             self.fp.writelines(q)
+            self.fp.flush()
+            
             # summarize
             l = len(q)
             self.bs.append([b,l])

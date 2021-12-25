@@ -55,3 +55,7 @@ some point-set cases.
 
 11/21/21
 - time will be dedicated this week to completing `class<BallComp>`.
+
+12/24/21
+- still working on `class<BallComp>`. I have been swamped, but hopefully,
+  the algorithm should be working next week.

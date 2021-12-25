@@ -9,19 +9,6 @@ DEFAULT_RSSI__CR__NOISE_ADDER = np.array([[0.01,0.15]])
 
 ##
 
-### TODO: test this
-'''
-method used by <ResplattingSearchSpaceIterator>
-'''
-def update_rch_by_path(rch,largs,updatePath):
-
-    def collect_largs(indices):
-        return [l for (i,l) in enumerate(largs) if i in indices]
-
-    for k,v in updatePath.items():
-        q = collect_largs(v)
-        rch[k].update_args(q)
-
 """
 class<ResplattingSearchSpaceIterator> is a data-structure
 that relies on class<SearchSpaceIterator>.
@@ -34,7 +21,8 @@ the original bounds:
 """
 class ResplattingSearchSpaceIterator:
 
-    def __init__(self,bounds, startPoint, columnOrder = None, SSIHop = 7, resplattingMode = ("relevance zoom",None), additionalUpdateArgs = ()):
+    def __init__(self,bounds, startPoint, columnOrder = None, SSIHop = 7,\
+        resplattingMode = ("relevance zoom",None), additionalUpdateArgs = (), ):
         assert is_proper_bounds_vector(bounds), "bounds "
         assert is_vector(startPoint), "invalid start point"
         assert resplattingMode[0] in {"relevance zoom", "prg"}
@@ -84,12 +72,45 @@ class ResplattingSearchSpaceIterator:
             yield rssi.ssi.close_cycle()
             rssi.iterateIt = False
 
+    """
+    use only with `relevance zoom`
+    """
+    @staticmethod
+    def iterate_one_batch(rssi, batchSize):
+        if rssi.terminated:
+            yield None
+            return
+
+        if not rssi.iteratedOnce:
+            while not rssi.iteratedOnce and batchSize > 0:
+                yield next(rssi)
+                batchSize -= 1
+            if rssi.iteratedOnce:
+                yield rssi.ssi.close_cycle()
+                rssi.ssi.referencePoint = rssi.ssi.de_start()
+
+                batchSize -= 1
+            rssi.iterateIt = False
+
+        while not rssi.iterateIt and batchSize > 0:
+            yield next(rssi)
+            batchSize -= 1
+
+        # case: bound ends before batch size output
+        if rssi.iterateIt and batchSize > 0:
+            yield rssi.ssi.close_cycle()
+            rssi.ssi.referencePoint = rssi.ssi.de_start()
+
+            batchSize -= 1
+            rssi.iterateIt = False
+            ###print("\tremainder: ", batchSize)
+            return ResplattingSearchSpaceIterator.iterate_one_batch(rssi,batchSize)
+
     '''
     declares either a class<SearchSpaceIterator> or class<SkewedSearchSpaceIterator>
     instance for the given bounds
     '''
     def declare_new_ssi(self,bounds, startPoint):
-
         # if no specified order, default is descending
         if type(self.columnOrder) == type(None):
             self.columnOrder =ResplattingSearchSpaceIterator.column_order(bounds.shape[0],"descending")
@@ -100,6 +121,9 @@ class ResplattingSearchSpaceIterator:
             self.ssi = SkewedSearchSpaceIterator(bounds,self.bounds,startPoint,self.columnOrder,self.SSIHop,cycleOn = True)
 
     # CAUTION: only rm[0] == `relevance zoom` has rch update
+    """
+    nbs :=
+    """
     def update_resplatting_instructor(self,nbs = None):
 
         if type(self.ri) == type(None):
@@ -150,6 +174,7 @@ class ResplattingSearchSpaceIterator:
     the most recent relevant bounds
     '''
     def save_rzoom_bounds_info(self):
+
         # case: current rzoom a.r. not saved
         if type(self.ri.rzoom.activationRange) != type(None):
             # case: make 0-bounds
@@ -161,7 +186,6 @@ class ResplattingSearchSpaceIterator:
         self.load_activation_ranges()
         # make the next rzoom
         nb = next(self.ri)
-
         # case: done
         if type(nb) == type(None): return nb
 
@@ -169,8 +193,6 @@ class ResplattingSearchSpaceIterator:
         if equal_iterables(nb[:,0],nb[:,1]):
             nb = self.fix_zero_size_activation_range(nb)
         return nb
-
-
 
     '''
     used for rm[0] == "relevance rezoom"
@@ -186,7 +208,9 @@ class ResplattingSearchSpaceIterator:
             # case: 0-size, modify activation range
             if equal_iterables(ar[:,0],ar[:,1]):
                 ar = self.fix_zero_size_activation_range(ar)
-            self.ri.rzoomBoundsCache.append(ar)
+
+            if type(ar) != type(None):
+                self.ri.rzoomBoundsCache.append(ar)
 
     """
     new activation range is
@@ -194,6 +218,12 @@ class ResplattingSearchSpaceIterator:
     """
     def fix_zero_size_activation_range(self, ar):
         assert equal_iterables(ar[:,0],ar[:,1]), "not zero-size"
+
+        # terminating condition: bounds too small
+        q = self.ssi.de_bounds()
+        x = np.sum(point_difference_of_improper_bounds(q,self.bounds))
+        if x <= 10 ** -3:
+            return None
 
         # save ssi location
         q = self.ssi.de_value()
@@ -257,7 +287,6 @@ class ResplattingSearchSpaceIterator:
             self.iteratedOnce = True
             self.iterateIt = True
             self.terminated = self.update_resplatting_instructor()
-            # close cycle here.
         else:
             self.iterateIt = False
 

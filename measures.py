@@ -263,7 +263,6 @@ def is_line_in_circle(line, circleCenter, circleRadius):
 ########## END: formulas for equations and geometric shapes
 
 
-euclidean_point_distance = lambda p1, p2: np.sqrt(np.sum((p1 - p2)**2))
 
 def euclidean_point_distance_of_bounds(parentBounds,bounds):
 

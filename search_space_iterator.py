@@ -142,7 +142,7 @@ class SearchSpaceIterator:
     def __next__(self):
         q = self.reached_end()
         if not self.cycleOn and q:
-            print("done with iteration")
+            #print("done with iteration")
             return np.copy(self.referencePoint)
 
         # check if reached end
@@ -262,7 +262,9 @@ class SearchSpaceIterator:
 
     def set_value(self,v):
         v = self.round_correct_point_in_bounds(v)
-        assert not (type(v) == type(None)), "point not in bounds!"
+        # case: point not in bounds
+        if type(v) == type(None):
+            return
 
         self.referencePoint = v
         for (i,hp) in enumerate(self.hopPatterns):
@@ -382,7 +384,7 @@ class SkewedSearchSpaceIterator(SearchSpaceIterator):
     def __next__(self):
 
         if not self.cycleOn and self.reached_end():
-            print("done with iteration")
+            #print("done with iteration")
             return np.copy(self.ref2)
 
         q = SearchSpaceIterator.__next__(self)

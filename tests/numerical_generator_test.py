@@ -34,6 +34,33 @@ class TestNumericalGeneratorClass(unittest.TestCase):
         for g_ in g:
             print(g_)
 
+    def test__random_npoint_from_point_in_bounds(self):
+
+        bounds = np.array([[-100,100.0],\
+                        [-100,100.0],\
+                        [-100,100.0],\
+                        [-100,100.0],\
+                        [-100,100.0],\
+                        [-100,100.0]])
+        r = 200.0
+
+        # case point on >= 1 of the bound extremes
+        p1 = np.array([-100,100,-99,80,95.0,-100])
+        for i in range(100):
+            p2 = random_npoint_from_point_in_bounds(bounds,p1,r)
+            assert type(p2) != type(None)
+        return
+
+    def test__random_npoint_from_point(self):
+        r = 200.0
+
+        # case point on >= 1 of the bound extremes
+        p1 = np.array([-100,100,-99,80,95.0,-100])
+        for i in range(100):
+            p2 = random_npoint_from_point(p1,r)
+            assert type(p2) != type(None)
+        return
+
 ######################## START: cycle map
 
 def test_CycleMap__set_map():

@@ -305,7 +305,6 @@ class RChainHead:
         self.updatePath = {} # node index -> update indices
 
     def update_rch(self):
-
         for s_ in self.s:
             s_.inst_update_var()
 
@@ -725,4 +724,49 @@ def sample_rch_1_with_update(parentBounds, bounds, h, coverageRatio):
             'dt': update_dt_function}
     rch.s[0].updatePath = {'rf': [0,1,2],'dt':[0,1,2,3]}
     rch.updatePath = {0: [0,1,2,3]}
+    return rch
+
+"""
+activation range is 0-20 percentile and 80-100 percentile
+"""
+def sample_rch_2_with_update(parentBounds, bounds):
+
+    def activation_range(parentBounds,bounds):
+        v = np.ones((parentBounds.shape[0],)) * 0.2
+        b1s = np.copy(bounds[:,0])
+        b1e = point_on_improper_bounds_by_ratio_vector(parentBounds,bounds,v)
+
+        v = np.ones((parentBounds.shape[0],)) * 0.8
+        b2s = point_on_improper_bounds_by_ratio_vector(parentBounds,bounds,v)
+        b2e = np.copy(bounds[:,1])
+
+        B1 = np.vstack((b1s,b1e)).T
+        B2 = np.vstack((b2s,b2e)).T
+
+        return B1,B2
+
+    def update_dt_function(parentBounds,bounds):
+        b1,b2 = activation_range(parentBounds,bounds)
+        return (np.copy(parentBounds),b1,b2)
+
+    """
+    r := parentBounds,b1,b2
+    """
+    def cf(p,r):
+        if point_in_improper_bounds(r[0],r[1],p):
+            return True
+        if point_in_improper_bounds(r[0],r[2],p):
+            return True
+        return False
+
+    rch = RChainHead()
+    dt = update_dt_function(parentBounds,bounds)
+    kwargs = ['nr',cf,dt]
+    rch.add_node_at(kwargs)
+
+    # add update functionality
+    rch.s[0].updateFunc = {'dt': update_dt_function}
+    rch.s[0].updatePath = {'dt':[0,1]}
+    rch.updatePath = {0: [0,1]}
+
     return rch

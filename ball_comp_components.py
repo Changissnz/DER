@@ -1,158 +1,130 @@
 from numerical_generator import *
 from point_weight_function import *
-from collections import Counter
 
-'''
-similar to the frequent item-set mining algorithm, Apriori algorithm.
+#################### start: area estimation methods
 
-Conducts merging of sets based on their likeness
+"""
+table contains values of curvature estimation between two
+circles that intersect.
 
-'''
-class SetMerger:
+These values are used to `gauge` the volume of intersection between
+two n-balls.
+"""
+CURVATURE_EST = {1.0:0.46792,\
+                5/6:0.52544,\
+                2/3:0.61026,\
+                1/2:0.72842,\
+                1/3:0.88860,\
+                1/4:0.96300,\
+                1/6:1.0}
 
-    '''
-    sv := list(set(int))
-    '''
-    def __init__(self, sv):
-        self.sv = sv
-        self.newSets = []
+CURVATURE_EST_KEYS = [1/6,1/4,1/3,1/2,2/3,5/6,1]
 
-    def save_new_sets(self):
-        self.sv = deepcopy(self.newSets)
-        self.newSets = []
+"""
+Calculates the intersection ratios of b1 and b2.
+The intersection ratio of a ball is the proportion of its diameter that
+lies in the intersection.
 
-    '''
-    non-commutative operation b/t two equally-sized sets
-    '''
-    @staticmethod
-    def set_difference_score(s1,s2):
-        assert type(s1) == type(s2) and type(s1) is set, "[0] invalid sets"
-        assert len(s1) == len(s2), "[1] invalid sets"
-        return len(s1 - s2)
+return:
+- intersection ratio of b1, intersection ratio of b2
+"""
+def intersection_ratio(b1,b2):
+    ed = euclidean_point_distance(b1.center,b2.center)
 
-    # TODO: test this.
-    '''
-    a closed implication is a container of sets that satisfy the following:
-    (1)  for every pair of elements s1,s2 in s, distance(s1,s2) = d.
-    (2) for every unique value v in s, v appears in s a minumum of `fr` times.
-    '''
-    @staticmethod
-    def is_closed_implication_for_merge(s,d = 1, fr = 2):
-        l = len(s)
+    # case: no intersection
+    if ed >= b1.radius + b2.radius:
+        return None,None
 
-        # case: empty
-        if l == 0: return False
+    # case: b2 completely in b1
+    if b2.radius + ed <= b1.radius:
+        return 0.0,1.0
 
-        c = Counter(s[l - 1])
-        for i in range(l - 1):
-            c2 = Counter(s[i])
-            c = c + c2
-            for j in range(i + 1,l):
-                d2 = SetMerger.set_difference_score(s[i],s[j])
-                if d2 != d:
-                    return False
+    # case: b1 completely in b2
+    if b1.radius + ed <= b2.radius:
+        return 1.0,0.0
 
-        x = np.array(list(c.values()))
+    # get intersection ratio of b1
+        # first point is the farthest boundary point of b1 that lies in b2
+        # point on ray (b1.center,b2.center) of distance b1.radius from b1.center
+    coeff1 = b1.radius / ed
+    x1 = b1.center + coeff1 * (b2.center - b1.center)
 
-        # case: fr is None, check for equal freq.
-        if type(fr) == type(None) and len(x) > 0:
-            return np.all(x == x[0])
+        # second point of interest is the farthest boundary point of b2 that lies in b1
+        # the point on the ray (b2.center,b1.center) at
+        # distance b1.radius + ed
+    coeff2 = b2.radius / ed
+    x2 = b2.center + coeff2 * (b1.center - b2.center)
+    distance = euclidean_point_distance(x1,x2)
+    return round(distance / (b1.radius * 2),5), round(distance / (b2.radius * 2),5)
 
-        return np.all(x >= fr)
+"""
+estimate does not include curvature estimation
+"""
+def prelim_2intersection_estimate(b1,ir):
+    if ir <= 0.5:
+        return ball_area(b1.radius, b1.center.shape[0]) * ir
+    return ball_area(b1.radius,b1.center.shape[0]) * 0.5 + prelim_2intersection_estimate(b1,ir - 0.5)
 
-    '''
-    '''
-    @staticmethod
-    def perform_merge(s,d,f = None):
-        q = SetMerger.is_closed_implication_for_merge(s,d,f)
-        if q:
-            x = set()
-            for q_ in s:
-                x |= q_
-            return x
-        return None
+def reference_intersection_ratio_to_curvature_est_key(ri):
+    assert ri >= 0 and ri <= 1, "invalid intersection ratio"
+    x = np.array([abs(ri - k) for k in CURVATURE_EST_KEYS])
+    i = np.argmin(x)
+    return CURVATURE_EST_KEYS[i]
 
-    '''
-    '''
-    @staticmethod
-    def is_set_at_distance_to_others(s,others,wantedDistance):
-        assert type(wantedDistance) is int and wantedDistance >= 0, "invalid wanted distance"
-        for o in others:
-            d = SetMerger.set_difference_score(s,o)
-            if d != wantedDistance: return False
-        return True
-
-    def merges_at_index(self,i,d = 1):
-        pm = self.possible_merges_at_index(i,d)
-        merges = []
-        for pm_ in pm:
-            pm_.append(self.sv[i])
-            pm2 = SetMerger.perform_merge(pm_,d,None)
-            if type(pm2) != type(None):
-                merges.append(pm2)
-        return merges
-
-    def possible_merges_at_index(self,i, d = 1):
-
-        l = len(self.sv)
-        if i >= len(self.sv) - 1: return []
-
-        possibleMerges = [] # list(list(set))
-        ref = self.sv[i]
-
-        # iterate through the sets and if s == 1,
-        # determines which index in possibleMerges to add to
-        for j in range(i + 1, l):
-                    ##print("\t\t##")
-                    ##print(ref,self.sv[j])
-            s = SetMerger.set_difference_score(ref,self.sv[j])
-            if s != d: continue
-
-            # find the list(set) in possibleMerges to merge to
-            if len(possibleMerges) != 0:
-                pm = -1
-                for (i2,p2) in enumerate(possibleMerges):
-                    stat = SetMerger.is_set_at_distance_to_others(ref,p2,d)
-                    if stat:
-                        p2.append(self.sv[j])
-                        pm = 1
-
-                # case: pm == -1
-                if pm == -1:
-                    possibleMerges.append([self.sv[j]])
-            # make a new element to add to possible merges
-            else:
-                possibleMerges.append([self.sv[j]])
-        return possibleMerges
-
-    def merge_by_implication(self):
-        m = []
-        l = len(self.sv)
-        if l == 0: return m
-
-        for i in range(l):
-            m_ = self.merges_at_index(i)
-            m.extend(m_)
-        return m
-
-# CAUTION: not fully tested
+# CAUTION
+##this is an approximation for Ball volume.
+##Value calculated from this method is to be used as a reference
+##rather than directly as a numerical value.
 def ball_area(r,k):
     assert k >= 2,"invalid k"
     x = math.pi * float(r) ** 2
     x2 = (k - 1) ** 2
     return x * x2
 
+def reference_volume_ratio(b1,b2):
+    return min([b1.radius / b2.radius,b2.radius / b1.radius])
+
+def volume_2intersection_estimate(b1,b2):
+    r1,r2 = intersection_ratio(b1,b2)
+
+    # case: no intersection
+    if type(r1) == type(None):
+        return 0.0
+
+    # case: ball 1 in ball 2
+    if r1 == 1.0:
+        return ball_area(b1.radius,b1.center.shape[0])
+
+    # case: ball 2 in ball 1
+    if r2 == 1.0:
+        return ball_area(b2.radius,b2.center.shape[0])
+
+    # case: intersection
+    ie1 = prelim_2intersection_estimate(b1,r1)
+    ie2 = prelim_2intersection_estimate(b2,r2)
+    referenceIntersectionRatio = r1 if b1.radius > b2.radius else r2
+    cek = reference_intersection_ratio_to_curvature_est_key(referenceIntersectionRatio)
+    rv = reference_volume_ratio(b1,b2)
+    curvatureEst = CURVATURE_EST[cek] + (1.0 - CURVATURE_EST[cek]) * rv
+    return min([ie1,ie2]) * curvatureEst
+
+#################### end: area estimation methods
+
 '''
 '''
 class Ball:
 
+    # used for reversion
     DELTA_MEMORY_CAPACITY = 3
 
-    def __init__(self, center):
+    def __init__(self, center,idn = None):
         assert is_vector(center), "invalid center point for Ball"
         self.center = center
+        self.idn = idn
         self.data = PointSorter(np.empty((0,self.center.shape[0])))
         self.radius = 0.0
+
+        # [0] is radial reference, [1] is
         self.radiusDelta = (None,None)
         self.radiusDeltas = []
         self.pointAddDeltas = []
@@ -162,6 +134,13 @@ class Ball:
         self.neighbors = set() # of ball neighbor identifiers
         return
 
+    def __str__(self):
+        s = "ball center: {}".format(self.center)
+        s2 = "\nball radius: {}".format(self.radius)
+        s3 = "\nball neighbors: {}".format(self.neighbors)
+        s3 = "\nball data shape: {}".format(self.data.newData.shape)
+
+        return s + s2 + s3
     '''
     '''
     @staticmethod
@@ -174,8 +153,7 @@ class Ball:
     '''
     '''
     def is_neighbor(self,b):
-        m = max([self.radius,b.radius])
-        return euclidean_point_distance(self.center,b.center) < m
+        return euclidean_point_distance(self.center,b.center) <= self.radius + b.radius
 
     def area(self):
         b = ball_area(self.radius, self.center.shape[0])
@@ -188,6 +166,26 @@ class Ball:
         for p in points:
             b.add_element(p)
         return b
+
+    @staticmethod
+    def one_ball_(center,radius,centerAsPoint = True):
+        b = Ball(center)
+        c = random_npoint_from_point(np.copy(center),radius)
+        b.add_element(c)
+        b.add_element(center)
+        return b
+
+    # TODO: test this.
+    def in_bounds(self,bounds):
+        assert self.center.shape[0] == bounds.shape[0], "invalid bounds"
+
+        bs = []
+        for (i,c) in enumerate(self.center):
+            c0,c1 = c - self.radius,c + self.radius
+            bs.append((c0,c1))
+        bs = np.array(bs)
+        bs = np.round(bs,5)
+        return bounds_is_subbounds(bounds,bs)
 
     def point_in_data(self,p):
         return self.data.vector_exists(p)
@@ -217,17 +215,6 @@ class Ball:
         if len(self.pointAddDeltas) == 0: return
         q = self.pointAddDeltas.pop(0)
 
-                ##
-        """
-        print("## REVERT ADD POINT")
-        print(q)
-        print("\t##")
-        print(self.radiusDelta)
-        print("\t##")
-        print(self.radiusDeltas)
-        """
-                ##
-                
         # remove from data
         if type(self.radiusDelta[0]) != type(None):
             if equal_iterables(q,self.radiusDelta[0]):
@@ -263,26 +250,6 @@ class Ball:
         return epd <= 0
 
     '''
-    upper-bound estimate on the k-dimensional sub-area
-    of b2 that intersects b1.
-
-    return:
-    - ratio:float, w.r.t. b2 area
-    '''
-    @staticmethod
-    def area_intersection_estimation_(b1, b2):
-        d2 = euclidean_point_distance(b2.center,b1.center)
-        d3 = d2 - b1.radius + b2.radius
-
-        # case: b2 proper subspace of b1
-        if d3 <= 0:
-            return 1.0
-
-        # case: b2 not proper subspace
-        r = 1.0 - (d3 / (2.0 * b2.radius))
-        return r
-
-    '''
     upper-bound estimate on the k-dimensional sub-area of
     intersection b/t b1 and b2.
     '''
@@ -292,42 +259,36 @@ class Ball:
         a2 = Ball.area_intersection_estimation_(b2,b1)
         x1 = min([b2.area() * a1, b1.area() * a2])
         return max([0.0,x1])
-    '''
-    '''
-    @staticmethod
-    def threeway_area_intersection_estimation(b1,b2,b3):
-        a13 = Ball.area_intersection_estimation_(b1,b3)
-        a23 = Ball.area_intersection_estimation_(b2,b3)
 
-        # case: no three way intersection
-        if a13 < 0 or a23 < 0: return 0.0
-
-        a13_ = Ball.area_intersection_estimation(b1,b3)
-        a23_ = Ball.area_intersection_estimation_(b2,b3)
-
-        av = ((a13_ * a23) + (a23_ * a13)) / 2.0
-        return av
 
     '''
     merges two balls
     '''
     def __add__(self, b2):
 
-        # calculate the difference
-        diff = b2.center - self.center
-        c = self.center + diff / 2.0
+        r1,r2 = intersection_ratio(self,b2)
+        # case: self in b2
+        if r1 == 1.0:
+            return b2
 
-        # calculate radius of new ball
-        rx = np.array([self.radius,b2.radius])
-        mi = np.argmax(rx)
-        b = self.center if mi == 1 else b2.center
-        d = euclidean_point_distance(b,c)
-        d = d + rx[mi]
+        # case: b2 in self
+        if r2 == 1.0:
+            return self
 
-        # instantiate new ball
-        b3 = Ball(c)
-            # fix new ball's variables
-        b3.radius = d
-        dr = np.vstack((self.data.data,b2.data.data))
+        # case: other
+        ed = euclidean_point_distance(self.center,b2.center)
+            # get the farthest boundary point of b2 on line (b1.center,b2.center)
+        x2 = b2.radius / ed
+        e2 = b2.center + x2 * (b2.center - self.center)
+
+            # get the farthest boundary point of b1 on line (b1.center,b2.center)
+        x1 = self.radius / ed
+        e1 = self.center + x1 * (self.center - b2.center)
+
+            # get midpoint of line
+        center = np.round((e1 + e2) / 2.0,5)
+        b3 = Ball(center)
+        b3.radius = np.round(euclidean_point_distance(e1,e2) / 2.0,5)
+        dr = np.vstack((self.data.newData,b2.data.newData))
         b3.data = PointSorter(dr)
         return b3

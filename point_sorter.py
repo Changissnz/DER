@@ -121,11 +121,9 @@ class PointSorter:
         self.deltaCache[-1] = np.empty((0,self.pointMean.shape[0]))
         self.deltaCache[1] = np.empty((0,self.pointMean.shape[0]))
 
-
     def sort_it(self):
         if self.newData.shape[0] <= 1:
             return
-
         self.sort_at_column(0, [0, self.newData.shape[0] - 1])
 
     def sort_at_column(self, columnIndex, submatrixIndices):

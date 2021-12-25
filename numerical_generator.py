@@ -161,16 +161,16 @@ def FloatDeltaGenerator_pattern1(rangesGanges, divider):
 #------------------------------------------------------------------
 #### binary sequence generators
 
-def generate_possible_binary_sequences(vecOrder, thisNumber):
+def generate_possible_binary_sequences(vecOrder, thisNumber, elements = [0,1]):
 
     if len(thisNumber) == vecOrder:
         yield thisNumber
         return
 
     q1, q2 = np.copy(thisNumber), np.copy(thisNumber)
-    q1, q2 = np.hstack((q1,[0])), np.hstack((q1,[1]))
-    yield from generate_possible_binary_sequences(vecOrder, q1)
-    yield from generate_possible_binary_sequences(vecOrder, q2)
+    q1, q2 = np.hstack((q1,[elements[0]])), np.hstack((q1,[elements[1]]))
+    yield from generate_possible_binary_sequences(vecOrder, q1,elements)
+    yield from generate_possible_binary_sequences(vecOrder, q2,elements)
 
 def generate_random_binary_sequence(vecOrder):
     assert type(vecOrder) is int, "invalid vec. order"
@@ -193,25 +193,11 @@ def generate_uniform_sequence_in_bounds(vecOrder, bounds):
             q[i] = rng.uniform(bounds[i,0], bounds[i,1])#, (vecOrder,))
         return q
 
-# TODO: test this
-'''
-description:
-- outputs a random extreme value for each dimension,
-  indices are [0,1] x dimension
-
-return:
-- vector, same length as min and max vec.
-'''
-def choose_random_bounds(minVec,maxVec):
-
-    assert is_vector(minVec) and is_vector(maxVec), "invalid vectors"
-    assert len(minVec) == len(maxVec), "min and max vectors must be same length"
-    bs = generate_random_binary_sequence(len(minVec))
-
-    minVec = minVec.reshape((len(minVec),1))
-    maxVec = maxVec.reshape((len(maxVec),1))
-    q = np.hstack((minVec,maxVec))
-    return q[list(range(len(minVec))),bs]
+def random_bounds_edge(bounds):
+    assert is_bounds_vector(bounds), "invalid bounds"
+    bs = generate_random_binary_sequence(bounds.shape[0])
+    r = [i for i in range(bounds.shape[0])]
+    return bounds[r,bs]
 
 ################################# TODO: noise methods need to be checked.
 
@@ -239,6 +225,79 @@ def one_random_noise(bounds,noiseRange):
     us = generate_uniform_sequence_in_bounds(bounds.shape[0], noiseRange)
     q = q * us
     return q
+
+def random_npoint_from_point(p1,l,roundDepth=5):
+    p2 = np.copy(p1)
+    r = np.arange(p1.shape[0])
+    np.random.shuffle(r)
+    r,x = r[:-1],r[-1]
+    d = 0.0
+
+    def delta_extreme():
+        return math.sqrt(l ** 2 - d)
+
+    def random_delta(j,randomize = True):
+        delta = delta_extreme()
+        delta = delta if random.random() > 0.5 else -delta
+
+        if randomize:
+            delta = random.uniform(0.0,delta)
+        return delta
+
+    for r_ in r:
+        rd = random_delta(r_)
+        p2[r_] = p2[r_] + rd
+        d += (rd **2)
+    p2[x] = p2[x] + random_delta(x,False)
+    return np.round(p2,5)
+
+# TODO: refactor duplicate code from above
+"""
+calculates a random n-dimensional point p2 in bounds `b` of distance `l`
+from `p1`.
+"""
+def random_npoint_from_point_in_bounds_(b,p1,l,roundDepth = 5):
+    p2 = np.copy(p1)
+    r = np.arange(p1.shape[0])
+    np.random.shuffle(r)
+    r,x = r[:-1],r[-1]
+    d = 0.0
+
+    def delta_extreme():
+        return math.sqrt(l ** 2 - d)
+
+    def possible_extreme(j):
+        return [b[j,0] - p1[j],b[j,1] - p1[j]]
+
+    def random_delta(j,randomize = True):
+        delta = delta_extreme()
+        delta = delta if random.random() > 0.5 else -delta
+
+        if randomize:
+            delta = random.uniform(0.0,delta)
+
+        pe = possible_extreme(j)
+        pe = pe[1] if delta > 0 else pe[0]
+        sols = [pe,delta]
+        k = np.argmin(np.abs(sols))
+        return sols[k]
+
+    for r_ in r:
+        rd = random_delta(r_)
+        p2[r_] = p2[r_] + rd
+        d += (rd **2)
+    p2[x] = p2[x] + random_delta(x,False)
+    return np.round(p2,5)
+
+def random_npoint_from_point_in_bounds(b,p1,l,attempts = 15):
+    t = False
+
+    while not t and attempts > 0:
+        p2 = random_npoint_from_point_in_bounds_(b,p1,l)
+        #print("DISTANCE ", euclidean_point_distance(p1,p2))
+        t = abs(euclidean_point_distance(p1,p2) - l) < 10 ** -5
+        attempts -= 1
+    return p2 if t else None
 
 '''
 adds noise to points in restricted bounds by noise range,
