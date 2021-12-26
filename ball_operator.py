@@ -9,7 +9,8 @@ an operator that can:
 # Ball splitting procedures
 - split value
 * literal: float value, the radius of the subball
-* dividor: float value, divides the distance between the target point of the sub-ball                        and the ball center
+* dividor: float value, divides the distance between the target point of the sub-ball
+                        and the ball center
 
 - sub-ball radius
 * static: sub-ball will attempt to fulfill radius value requirement
@@ -120,12 +121,16 @@ class BallOperator:
     - split := (float,literal|dividor)
     - subballRadiusType := static|minimal
     """
-    def run_subball_split(self, split,subballRadiusType = "static"):
+    def run_subball_split(self, split,subballRadiusType = "static", verbose = False):
         assert split[1] in {"literal","dividor"}, "invalid split"
         assert subballRadiusType in {"static","minimal"}, "invalid subball radius type"
 
         self.subballs = []
         self.subballRadii = []
+
+        if verbose:
+            print("\t\t\tstarting split on ball of size {}".format(self.ball.data.newData.shape[0]))
+
 
         if split[1] == "literal" and self.ball.radius <= split[0]:
             self.subballs.append(deepcopy(self.ball))
@@ -146,10 +151,20 @@ class BallOperator:
             self.subballRadii.append(q)
 
             self.cache2 = np.copy(sb.data.newData)
+
+            print("\t\t\tnumber of subballs: {} | added points {}".format(len(self.subballs), sb.data.newData.shape[0]))
+
             self.add_cache_points_to_subball(sb,q)
             self.cache = np.vstack((self.cache,self.cache2))
-
         return
+
+    def revert_split(self):
+        self.ball.data = PointSorter(self.cache)
+        self.clear_cache()
+        while len(self.subballs) > 0:
+            x = self.subballs.pop(0)
+            del x
+        self.subballs = []
 
     def antiradial_ref(self,subballRadius, radialRef):
         i = np.argmin([abs(euclidean_point_distance(p,radialRef) - subballRadius) for p in self.ball.data.newData])
@@ -159,16 +174,11 @@ class BallOperator:
         # draw line segment (radialRef,e) towards ball center of length
         # `subballRadius`; e is the center
 
-        #### old calculation for center
-        # delta = self.ball.center - radialRef
-        # c = zero_div(subballRadius,euclidean_point_distance(self.ball.center,radialRef),0.0)
-        # newCenter = np.round(radialRef + c * delta,5)
-
         #### new calculation for center
         ref2 = self.antiradial_ref(subballRadius,radialRef)
         newCenter = ref2
         b = Ball(newCenter)
-        subballRadius = cr(euclidean_point_distance(b.center,radialRef))
+        subballRadius = cr(euclidean_point_distance(b.center,radialRef)) + 10 ** -4
 
         # save remaining target ball points to subball
         self.add_ball_points_to_subball(b,subballRadius)
@@ -176,9 +186,10 @@ class BallOperator:
 
     ############## start: method for after post-add
 
-    def save_subball_data_to_cache(self,sb):
-        self.cache = np.vstack((self.cache,sb.data.newData))
-
+    """
+    adds each point p already iterated over (in cache) to subball `sb`
+    if p is at distance <= r to `sb.center`
+    """
     def add_cache_points_to_subball(self,sb,r):
         for x in self.cache:
             if euclidean_point_distance(sb.center,x) <= r:
@@ -186,9 +197,6 @@ class BallOperator:
 
     ############## end: method for after post-add
 
-    # QUESTION: should ball center also be updated?
-    """
-    """
     def update_radial_ref(self):
         index = np.argmax([euclidean_point_distance(self.ball.center,x) for x in self.ball.data.newData])
         self.targetPoint = self.ball.data.newData[index]
@@ -225,8 +233,3 @@ class BallOperator:
             else:
                 i += 1
         return
-
-
-    ########################### start: volume estimation
-
-    ########################### end: volume estimation

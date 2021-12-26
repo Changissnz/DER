@@ -133,7 +133,7 @@ class SetMerger:
                 merges.append(self.sv[j])
         return merges
 
-    def merge_one(self,saveToVar = False,outputSource = False):
+    def merge_one(self,saveToVar = False,outputSource = False,verbose = False):
         results = []
         results2 = []
         for i in range(len(self.sv) -1):
@@ -147,8 +147,14 @@ class SetMerger:
 
         if saveToVar and len(results) > 0:
             self.sv = results
+
+        if verbose:
+            print("# length of merges @ : ",len(results))
+
         return (results,results2) if outputSource else results
 
-    def merge(self):
-        while len(self.merge_one(True)) > 0:
+    def merge(self,verbose):
+        c = 1
+        while len(self.merge_one(True,c)) > 0:
+            c +=1
             continue

@@ -42,6 +42,8 @@ def ballcomp_sample_data_4__rch():
 
     rch = RChainHead()# np.array()
 
+    ### not enough points generated
+    """
     rv1 = np.array([[-100.0,-90],\
                     [0,10],\
                     [-100,-90],\
@@ -69,12 +71,21 @@ def ballcomp_sample_data_4__rch():
                     [40.0,60],\
                     [-10,5],\
                     [45.0,55.0]])
+    """
+    ###
 
+    rv1 = np.array([-90,10,-90,10,-90,10])
+    rv2 = np.array([-90.0,10,-90,10,-90,10])
+    rv3 = np.array([90.0,90.0,80.0,80.0,-90,85.0])
+    rv4 = np.array([20.0,50.0,-5.0,40.0,-10,45.0])
     dt_ = [rv1,rv2,rv3,rv4]
+    q = 387.2983346207417 / 6.0
+    ##q_ = [q * 1/6, q * 1/8, q * 1/7, q * q * 1/7]
 
     def cf(x,dt):
         for r in dt:
-            if point_in_bounds(r,x):
+            if euclidean_point_distance(x,r) <= q:
+            ##if point_in_bounds(r,x):
                 return True
         return False
 
@@ -107,7 +118,7 @@ def ballcomp_sample_data_4(noiseRange = None):
     nsdi = NSDataInstructions(bInf,rm,filePath,modeia,noiseRange,writeOutMode)
     nsdi.make_rssi()
 
-    c = 12 ** 6
+    c = ssih ** 6
     c_ = 0
     while nsdi.fp and c_ < c:
         print("batch @ ",c_)
@@ -115,5 +126,6 @@ def ballcomp_sample_data_4(noiseRange = None):
         c_ += DEFAULT_SINGLE_WRITE_SIZE
 
     if nsdi.fp:
+        print("YESS")
         nsdi.fp.close()
     return

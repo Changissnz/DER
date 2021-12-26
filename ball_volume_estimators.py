@@ -28,6 +28,8 @@ class DisjunctionVolumeEstimator:
 
     def log_ball_volume(self,b1):
         prev = self.ballVolumes[b1.idn] if b1.idn in self.ballVolumes else None
+        ###print("logging ball volume for {}: {}".format(b1.idn,prev))
+
         self.ballVolumes[b1.idn] = ball_area(b1.radius,b1.center.shape[0])
         self.cache1.append([b1.idn,prev])
 
@@ -43,6 +45,8 @@ class DisjunctionVolumeEstimator:
         self.cache2.append([k,x])
 
         est = volume_2intersection_estimate(b1,b2)
+        ###print("$EST FOR {}: {}".format(k,est))
+        ##if est > 0:
         self.d[k] = est
 
     def clear_cache(self):
@@ -93,13 +97,15 @@ class DisjunctionVolumeEstimator:
                 twoIntersections.append(set(q))
         return twoIntersections
 
-    def estimate_disjunction_at_target_ball(self,bIdn):
+    def estimate_disjunction_at_target_ball(self,bIdn, verbose,capacity = 500):
         # get 1-intersection volume
         tan = self.target_ball_neighbors(bIdn) | {bIdn}
         q = sum([self.ballVolumes[k] for k in tan])
 
         # get 2-intersection volumes
-        ti = self.relevant_2intersections_for_ballset(tan)
+        ##ti = self.relevant_2intersections_for_ballset(tan)
+        ti = self.relevant_2intersections_for_ballset({bIdn})
+
         # case: no intersections
         if len(ti) == 0:
             return q
@@ -109,12 +115,16 @@ class DisjunctionVolumeEstimator:
         q -= (q2 * 2)
         j = 3
         c = 1.0
+        if verbose:
+            print("\t\t{} relevant 2-int".format(len(ti)))
         self.sm = SetMerger(ti)
 
+        self.bv = deepcopy(self.d)
         # alternately add and minus j'th intersection volumes
+        x = j if verbose else False
         while True:
             # estimate the j'th disjunction value
-            a = self.estimate_disjunction_at_target_ball_()
+            a = self.estimate_disjunction_at_target_ball_(x,capacity)
             if a == 0.0:
                 break
             q += (a * j * c)
@@ -122,17 +132,23 @@ class DisjunctionVolumeEstimator:
             # increment the coefficients
             c = -1 * c
             j += 1
+            if verbose: print("^ depth @ ", j)
         return q
 
     """
     Performs a `SetMerger.merge_one` operation and estimate volumes of new
     intersection sets.
+
+    capacity := int, size capacity for merges, use to prevent memory use error.
     """
-    def estimate_disjunction_at_target_ball_(self):
+    def estimate_disjunction_at_target_ball_(self,c = False,capacity = None):
         # merge one and collect the new merges and their predecessors
-        r1,r2 = self.sm.merge_one(True,True)
+        r1,r2 = self.sm.merge_one(True,True,c)
 
         if len(r1) == 0:
+            return 0.0
+
+        if len(r1) >= capacity:
             return 0.0
 
         # calculate the intersection estimate of each predecessor
@@ -144,7 +160,7 @@ class DisjunctionVolumeEstimator:
         self.bv = {}
         q = 0.0
         for (r1_,vs_) in zip(r1,vs):
-            k = vector_to_string(ordered(r1_))
+            k = vector_to_string(sorted(r1_))
             self.bv[k] = vs_
             q += vs_
         return q
@@ -154,9 +170,10 @@ class DisjunctionVolumeEstimator:
 
     iSet := list(set), closed implication
     """
-    def estimate_int_value(self,iSet):
+    def estimate_int_value(self,iSet,):
 
         # collect volumes
+        ##print("BV\n", self.bv)
         v = []
         for x in iSet:
             q = vector_to_string(sorted(x))
@@ -165,7 +182,7 @@ class DisjunctionVolumeEstimator:
 
     """
     iterates through keyset and deletes all keys found in keyset from
-    `ballVolumes` and `bv`
+    `ballVolumes` and `d`
     """
     def delete_keyset(self,keySet):
 
@@ -174,11 +191,11 @@ class DisjunctionVolumeEstimator:
             del self.ballVolumes[k]
 
         # delete 2-intersections
-        ks = list(self.bv.keys())
+        ks = list(self.d.keys())
 
         for k in ks:
             q = string_to_vector(k)
             if q[0] in keySet or q[1] in keySet:
-                del self.bv[k]
+                del self.d[k]
 
         return

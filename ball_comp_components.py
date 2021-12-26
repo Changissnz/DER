@@ -86,7 +86,7 @@ def reference_volume_ratio(b1,b2):
 
 def volume_2intersection_estimate(b1,b2):
     r1,r2 = intersection_ratio(b1,b2)
-
+    ###print("RI: ",r1,r2, ball_area(b1.radius,6),ball_area(b2.radius,6))
     # case: no intersection
     if type(r1) == type(None):
         return 0.0
@@ -102,6 +102,9 @@ def volume_2intersection_estimate(b1,b2):
     # case: intersection
     ie1 = prelim_2intersection_estimate(b1,r1)
     ie2 = prelim_2intersection_estimate(b2,r2)
+
+    ###print("IE1 ", ie1, "\t",ie2)
+
     referenceIntersectionRatio = r1 if b1.radius > b2.radius else r2
     cek = reference_intersection_ratio_to_curvature_est_key(referenceIntersectionRatio)
     rv = reference_volume_ratio(b1,b2)
@@ -135,12 +138,13 @@ class Ball:
         return
 
     def __str__(self):
-        s = "ball center: {}".format(self.center)
+        s0 = "ball idn: {}".format(self.idn)
+        s = "\nball center:\n\t{}".format(vector_to_string(self.center,float))
         s2 = "\nball radius: {}".format(self.radius)
         s3 = "\nball neighbors: {}".format(self.neighbors)
         s3 = "\nball data shape: {}".format(self.data.newData.shape)
 
-        return s + s2 + s3
+        return s0 + s + s2 + s3
     '''
     '''
     @staticmethod
