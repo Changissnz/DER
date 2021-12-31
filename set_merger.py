@@ -57,7 +57,7 @@ class SetMerger:
             counter = counter + Counter(s_)
 
         # check correct number of elements
-        if not SetMerger.correct_number_of_elements(n,len(s[0])):
+        if SetMerger.correct_number_of_elements(n,len(s[0])) > len(s):
             return False
 
         # check correct number of objects

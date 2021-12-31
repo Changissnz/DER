@@ -70,7 +70,7 @@ def test__BallComp__sample_1_sample_data_4():
     ms = MessageStreamer(filePath,readMode = 'r')
     bc = BallComp(maxBalls,maxRadius,5,vh,2)
 
-    q = 3
+    q = 20
     s = 0
     while ms.stream() and q > 0:
         for t in ms.blockData:
