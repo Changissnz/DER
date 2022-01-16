@@ -62,3 +62,6 @@ some point-set cases.
 
 12/31/31
 - taking a little break from this project
+
+1/15/22
+- I will go back to this project in about a month and finish up on some data structures.
