@@ -3,6 +3,9 @@
 This project is called DER. I will let the interpretation
 of that fall upon your shoulders.
 
+Update: 1/22
+I will no longer work on DER. There is a pip-installable package version of the DER called morebs that is undergoing more work. 
+
 Update: 11/12
 
 The DER is a digital tool still in progress. I am planning for the completion to not be utilized as an object as dark as the sword I am talking about by dragging this sentence past the appropriate length but yet still fine with it under the enthusiasm necessary for such expressivity that can only defy certain principles with both powers and potentials necessary to conduct required requirements that may?
